@@ -23,6 +23,11 @@ export class SecurityService {
   }
   async verifyToken(token: string) {
     try {
+      if(!token.startsWith("Bearer ")){
+        throw new UnauthorizedException("Token hato yoki muddati o'tgan");
+      }
+      token=token.split(" ")[1]
+      // console.log(token )
       return await this.jwtService.verifyAsync(token, {
         secret: this.configService.get('JWT_SECRET'),
       });

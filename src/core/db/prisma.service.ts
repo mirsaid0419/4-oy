@@ -13,11 +13,11 @@ export class PrismaServise
   implements OnModuleDestroy, OnModuleInit
 {
   constructor() {
-    const connectingString = process.env.DATABASE_URL;
-    const pool = new Pool({ connectingString });
+    const connectionString = process.env.DATABASE_URL;
+    const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
     super({ adapter, log: ['warn', 'error'] });
-  }
+  }  
 
   async onModuleDestroy() {
     this.$disconnect();
