@@ -1,29 +1,260 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
-  SUPERADMIN
-  ADMIN
-  TEACHER
-  STUDENT
+// enum UserRole {
+//   SUPERADMIN
+//   ADMIN
+//   TEACHER
+//   STUDENT
+// }
+
+// enum Status {
+//   active
+//   inactive
+//   freeze
+// }
+
+// enum StudentStatus {
+//   active
+//   inactive
+//   freeze
+//   graduated
+// }
+
+// enum GroupStatus {
+//   planned
+//   active
+//   completed
+// }
+
+// enum WeekDay {
+//   Monday
+//   Tuesday
+//   Wednesday
+//   Thursday
+//   Friday
+//   Saturday
+//   Sunday
+// }
+
+// model User {
+//   id         Int      @id @default(autoincrement())
+//   first_name String
+//   last_name  String
+//   email      String   @unique
+//   password   String
+//   role       UserRole
+//   phone      String   @unique
+//   address    String?
+//   photo      String?
+//   status     Status   @default(active)
+//   created_at DateTime @default(now())
+//   updated_at DateTime @default(now())
+// }
+
+// model Students {
+//   id            Int            @id @default(autoincrement())
+//   first_name    String
+//   last_name     String
+//   email         String         @unique
+//   password      String
+//   phone         String         @unique
+//   address       String?
+//   photo         String?
+//   birth_date    DateTime
+//   status        StudentStatus  @default(active)
+//   created_at    DateTime       @default(now())
+//   updated_at    DateTime       @default(now())
+//   studentGroups StudentGroup[]
+// }
+
+// model Teachers {
+//   id         Int      @id @default(autoincrement())
+//   first_name String
+//   last_name  String
+//   email      String   @unique
+//   password   String
+//   phone      String   @unique
+//   address    String?
+//   photo      String?
+//   status     Status   @default(active)
+//   created_at DateTime @default(now())
+//   updated_at DateTime @default(now())
+
+//   groups Groups[]
+// }
+
+// model Courses {
+//   id             Int      @id @default(autoincrement())
+//   name           String   @unique
+//   description    String
+//   price          Int
+//   duration_month Int
+//   duration_hours Int
+//   level          String
+//   status         Status   @default(active)
+//   created_at     DateTime @default(now())
+//   updated_at     DateTime @default(now())
+
+//   groups Groups[]
+// }
+
+// model Rooms {
+//   id         Int      @id @default(autoincrement())
+//   name       String   @unique
+//   created_at DateTime @default(now())
+//   updated_at DateTime @default(now())
+
+//   groups Groups[]
+// }
+
+// model Groups {
+//   id           Int      @id @default(autoincrement())
+//   name         String
+//   description  String?
+//   course_id    Int
+//   teacher_id   Int
+//   room_id      Int
+//   start_date   DateTime
+//   week_day     Json
+//   start_time   String
+//   max_students Int      @default(20)
+//   status       String   @default("planned")
+//   created_at   DateTime @default(now())
+//   updated_at   DateTime @default(now())
+
+//   course        Courses        @relation(fields: [course_id], references: [id])
+//   teacher       Teachers       @relation(fields: [teacher_id], references: [id])
+//   rooms         Rooms          @relation(fields: [room_id], references: [id])
+//   studentGroups StudentGroup[]
+// }
+
+// model StudentGroup {
+//   id         Int      @id @default(autoincrement())
+//   student_id Int
+//   group_id   Int
+//   status     Status   @default(active)
+//   created_at DateTime @default(now())
+//   updated_at DateTime @default(now())
+
+//   students Students @relation(fields: [student_id], references: [id])
+//   groups   Groups   @relation(fields: [group_id], references: [id])
+// }
+
+model Staff {
+  id         String @id @default(uuid())
+  first_name String @db.VarChar(100)
+  last_name  String @db.VarChar(100)
+  username   String @unique @db.VarChar(50)
+  password   String @db.VarChar(255)
+
+  role Role @default(teacher)
+
+  position  String   @db.VarChar(100)
+  phone     String?  @db.VarChar(20)
+  address   String?  @db.Text
+  hire_date DateTime @default(now()) @db.Date
+
+  status Status @default(active)
+
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  groups      Group[]
+  lessons     Lesson[]
+  attendances Attendance[]
+  payments    Payment[]
+
+  @@map("staffs")
+}
+
+enum Role {
+  superadmin
+  admin
+  teacher
 }
 
 enum Status {
   active
   inactive
-  freeze
+}
+
+model Student {
+  id         String    @id @default(uuid())
+  first_name String    @db.VarChar(100)
+  last_name  String    @db.VarChar(100)
+  username   String?   @unique @db.VarChar(50)
+  password   String?   @db.VarChar(255)
+  phone      String?   @db.VarChar(20)
+  address    String?   @db.Text
+  birth_date DateTime? @db.Date
+
+  status StudentStatus @default(active)
+
+  enrollment_date   DateTime?          @default(now()) @db.Date
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  studentGroups     StudentGroup[]
+  attendanceDetails AttendanceDetail[]
+  payments          Payment[]
+
+  @@map("students")
 }
 
 enum StudentStatus {
   active
   inactive
-  freeze
   graduated
+}
+
+model Course {
+  id          String  @id @default(uuid())
+  name        String  @db.VarChar(100)
+  description String? @db.Text
+  price       Int
+  duration    Int
+
+  level Level? @default(beginner)
+
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  groups     Group[]
+
+  @@map("courses")
+}
+
+enum Level {
+  beginner
+  intermediate
+  advanced
+}
+
+model Group {
+  id           String      @id @default(uuid())
+  name         String      @db.VarChar(50)
+  course_id    String
+  teacher_id   String
+  start_date   DateTime    @db.Date
+  end_date     DateTime?   @db.Date
+  schedule     String?     @db.Text
+  max_students Int         @default(20)
+  status       GroupStatus @default(planned)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+
+  course        Course         @relation(fields: [course_id], references: [id])
+  teacher       Staff          @relation(fields: [teacher_id], references: [id])
+  studentGroups StudentGroup[]
+  lessons       Lesson[]
+  payments      Payment[]
+  schedules     Schedule[]
+
+  @@map("groups")
 }
 
 enum GroupStatus {
@@ -32,7 +263,125 @@ enum GroupStatus {
   completed
 }
 
-enum WeekDay {
+model StudentGroup {
+  id         String             @id @default(uuid())
+  student_id String
+  group_id   String
+  join_date  DateTime?          @default(now()) @db.Date
+  status     StudentGroupStatus @default(active)
+  created_at DateTime           @default(now())
+  updated_at DateTime           @updatedAt
+
+  student Student @relation(fields: [student_id], references: [id])
+  group   Group   @relation(fields: [group_id], references: [id])
+
+  @@unique([student_id, group_id])
+  @@map("student_groups")
+}
+
+enum StudentGroupStatus {
+  active
+  inactive
+  completed
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  group_id    String
+  title       String?  @db.VarChar(255)
+  description String?  @db.Text
+  lesson_date DateTime @db.Date
+  start_time  DateTime @db.Time
+  end_time    DateTime @db.Time
+  room_number String?  @db.VarChar(20)
+  created_by  String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  group       Group        @relation(fields: [group_id], references: [id])
+  creator     Staff        @relation(fields: [created_by], references: [id])
+  attendances Attendance[]
+
+  @@map("lessons")
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  lesson_id  String
+  created_by String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  lesson            Lesson             @relation(fields: [lesson_id], references: [id])
+  creator           Staff              @relation(fields: [created_by], references: [id])
+  attendanceDetails AttendanceDetail[]
+
+  @@map("attendance")
+}
+
+model AttendanceDetail {
+  id            String           @id @default(uuid())
+  attendance_id String
+  student_id    String
+  status        AttendanceStatus
+  comment       String?          @db.Text
+
+  attendance Attendance @relation(fields: [attendance_id], references: [id])
+  student    Student    @relation(fields: [student_id], references: [id])
+
+  @@unique([attendance_id, student_id])
+  @@map("attendance_details")
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  student_id     String
+  group_id       String
+  amount         Int
+  payment_date   DateTime?     @default(now()) @db.Date
+  payment_method PaymentMethod
+  description    String?       @db.Text
+  receipt_number String?       @db.VarChar(50)
+  created_by     String
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  student Student @relation(fields: [student_id], references: [id])
+  group   Group   @relation(fields: [group_id], references: [id])
+  creator Staff   @relation(fields: [created_by], references: [id])
+
+  @@map("payments")
+}
+
+enum PaymentMethod {
+  cash
+  card
+  transfer
+}
+
+model Schedule {
+  id          String   @id @default(uuid())
+  group_id    String
+  day         Day
+  start_time  DateTime @db.Time
+  end_time    DateTime @db.Time
+  room_number String?  @db.VarChar(20)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  group Group @relation(fields: [group_id], references: [id])
+
+  @@unique([group_id, day, start_time])
+  @@map("schedule")
+}
+
+enum Day {
   Monday
   Tuesday
   Wednesday
@@ -40,108 +389,4 @@ enum WeekDay {
   Friday
   Saturday
   Sunday
-}
-
-model User {
-  id         Int      @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  password   String
-  role       UserRole
-  phone      String   @unique
-  address    String?
-  photo      String?
-  status     Status   @default(active)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-}
-
-model Students {
-  id            Int            @id @default(autoincrement())
-  first_name    String
-  last_name     String
-  email         String         @unique
-  password      String
-  phone         String         @unique
-  address       String?
-  photo         String?
-  birth_date    DateTime
-  status        StudentStatus  @default(active)
-  created_at    DateTime       @default(now())
-  updated_at    DateTime       @default(now())
-  studentGroups StudentGroup[]
-}
-
-model Teachers {
-  id         Int      @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  password   String
-  phone      String   @unique
-  address    String?
-  photo      String?
-  status     Status   @default(active)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  groups Groups[]
-}
-
-model Courses {
-  id             Int      @id @default(autoincrement())
-  name           String   @unique
-  description    String
-  price          Int
-  duration_month Int
-  duration_hours Int
-  level          String
-  status         Status   @default(active)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @default(now())
-
-  groups Groups[]
-}
-
-model Rooms {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  groups Groups[]
-}
-
-model Groups {
-  id           Int      @id @default(autoincrement())
-  name         String
-  description  String?
-  course_id    Int
-  teacher_id   Int
-  room_id      Int
-  start_date   DateTime
-  week_day     Json
-  start_time   String
-  max_students Int      @default(20)
-  status       String   @default("planned")
-  created_at   DateTime @default(now())
-  updated_at   DateTime @default(now())
-
-  course        Courses        @relation(fields: [course_id], references: [id])
-  teacher       Teachers       @relation(fields: [teacher_id], references: [id])
-  rooms         Rooms          @relation(fields: [room_id], references: [id])
-  studentGroups StudentGroup[]
-}
-
-model StudentGroup {
-  id         Int      @id @default(autoincrement())
-  student_id Int
-  group_id   Int
-  status     Status   @default(active)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  students Students @relation(fields: [student_id], references: [id])
-  groups   Groups   @relation(fields: [group_id], references: [id])
 }

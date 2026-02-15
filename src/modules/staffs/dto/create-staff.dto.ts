@@ -8,7 +8,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { Role, Status } from '@prisma/client'; 
-export class CreateUserDto{}
+
 export class CreateStaffDto {
   @IsString()
   @IsNotEmpty()
