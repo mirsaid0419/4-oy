@@ -7,5 +7,5 @@ import { PrismaServise } from 'src/core/db/prisma.service';
   controllers: [StaffsController],
   providers: [StaffsService,PrismaServise],
   exports: [StaffsService]
-})
+}) 
 export class StaffsModule {}

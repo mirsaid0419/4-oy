@@ -146,12 +146,32 @@ datasource db {
 //   groups   Groups   @relation(fields: [group_id], references: [id])
 // }
 
+model Teacher {
+  id             String @id @default(uuid())
+  specialization String @db.VarChar(100)
+  education      String @db.VarChar(100)
+  experience     Int
+
+  // Staff bilan bog'lanish (One-to-One)
+  staffId String @unique
+  staff   Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("teachers")
+}
+
+// Staff modeliga ham mana bu qatorni qo'shib qo'ying (agar yo'q bo'lsa):
+// teacher  Teacher?
+
 model Staff {
   id         String @id @default(uuid())
   first_name String @db.VarChar(100)
   last_name  String @db.VarChar(100)
   username   String @unique @db.VarChar(50)
   password   String @db.VarChar(255)
+  // photo      String @db.VarCHar(255)
 
   role Role @default(teacher)
 
@@ -168,6 +188,7 @@ model Staff {
   lessons     Lesson[]
   attendances Attendance[]
   payments    Payment[]
+  teacher     Teacher?
 
   @@map("staffs")
 }
