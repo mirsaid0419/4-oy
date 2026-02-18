@@ -8,10 +8,10 @@ import {
   MaxLength,
   IsEmail,
 } from 'class-validator';
-import { Role, Status } from '@prisma/client';
+import { StudentStatus } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateStaffDto {
+export class CreateStudentDto {
   @ApiProperty({ example: 'Mirsaid' })
   @IsString()
   @IsNotEmpty()
@@ -30,11 +30,11 @@ export class CreateStaffDto {
   @MinLength(3)
   @MaxLength(50)
   username: string;
-  
-  @ApiProperty({example:"teshavoy@gmail.com"})
+
+  @ApiProperty({ example: 'teshavoy@gmail.com' })
   @IsString()
   @IsEmail()
-  email: string
+  email: string;
 
   @ApiProperty({ example: 'Ab123456!' })
   @IsString()
@@ -42,17 +42,6 @@ export class CreateStaffDto {
   @MinLength(6)
   @MaxLength(255)
   password: string;
-
-  @ApiProperty({ example: Role.teacher })
-  @IsEnum(Role)
-  @IsOptional()
-  role?: Role;
-
-  @ApiProperty({ example: "O'quv bo'limi" })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  position: string;
 
   @ApiProperty({ example: '+998951234567' })
   @IsString()
@@ -66,13 +55,13 @@ export class CreateStaffDto {
   @IsOptional()
   address?: string;
 
-  @ApiProperty({ example: Status.active })
-  @IsEnum(Status)
+  @ApiProperty({ example: StudentStatus.active })
+  @IsEnum(StudentStatus)
   @IsOptional()
-  status?: Status;
+  status?: StudentStatus;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ type: 'string', format: 'binary', required: false })
-  photo?: string|any;
+  photo?: string | any;
 }

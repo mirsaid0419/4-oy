@@ -26,12 +26,27 @@ CREATE TYPE "PaymentMethod" AS ENUM ('cash', 'card', 'transfer');
 CREATE TYPE "Day" AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
 
 -- CreateTable
+CREATE TABLE "teachers" (
+    "id" TEXT NOT NULL,
+    "specialization" VARCHAR(100) NOT NULL,
+    "education" VARCHAR(100) NOT NULL,
+    "experience" INTEGER NOT NULL,
+    "staffId" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "teachers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "staffs" (
     "id" TEXT NOT NULL,
     "first_name" VARCHAR(100) NOT NULL,
     "last_name" VARCHAR(100) NOT NULL,
     "username" VARCHAR(50) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
+    "photo" VARCHAR(255),
+    "email" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'teacher',
     "position" VARCHAR(100) NOT NULL,
     "phone" VARCHAR(20),
@@ -178,7 +193,13 @@ CREATE TABLE "schedule" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "teachers_staffId_key" ON "teachers"("staffId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "staffs_username_key" ON "staffs"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "staffs_email_key" ON "staffs"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "students_username_key" ON "students"("username");
@@ -191,6 +212,9 @@ CREATE UNIQUE INDEX "attendance_details_attendance_id_student_id_key" ON "attend
 
 -- CreateIndex
 CREATE UNIQUE INDEX "schedule_group_id_day_start_time_key" ON "schedule"("group_id", "day", "start_time");
+
+-- AddForeignKey
+ALTER TABLE "teachers" ADD CONSTRAINT "teachers_staffId_fkey" FOREIGN KEY ("staffId") REFERENCES "staffs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "groups" ADD CONSTRAINT "groups_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

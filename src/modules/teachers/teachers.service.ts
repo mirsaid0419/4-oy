@@ -1,26 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { PrismaServise } from 'src/core/db/prisma.service';
+import { Role, Status } from '@prisma/client';
 
 @Injectable()
 export class TeachersService {
-  create(createTeacherDto: CreateTeacherDto) {
-    return 'This action adds a new teacher';
+  constructor(private prisma: PrismaServise) {}
+  async create(createTeacherDto: CreateTeacherDto) {
+    return await this.prisma.teacher.create({ data: createTeacherDto });
   }
 
-  findAll() {
-    return `This action returns all teachers`;
+  async getAllArxiv() {
+    const courses = await this.prisma.teacher.findMany({
+      where: { staff: { status: Status.inactive, role: Role.teacher } },
+    });
+    return { success: true, data: courses };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} teacher`;
+  async findAll() {
+    return await this.prisma.teacher.findMany({
+      where: {
+        staff: {
+          status: Status.active,
+          role: Role.teacher,
+        },
+      },
+    });
   }
 
-  update(id: number, updateTeacherDto: UpdateTeacherDto) {
+  async findOne(id: string) {
+    const user = this.prisma.teacher.findUnique({ where: { id } });
+  }
+
+  update(id: string, updateTeacherDto: UpdateTeacherDto) {
     return `This action updates a #${id} teacher`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} teacher`;
   }
 }

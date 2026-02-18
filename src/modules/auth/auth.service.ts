@@ -41,4 +41,19 @@ export class AuthService {
       position: user.position,
     };
   }
+  async StudentLogin(data: StaffLoginDto) {
+    const user = await this.prisma.student.findUnique({
+      where: { username: data.username },
+    });
+    if (!user || !(await bcrypt.compare(data.password, user.password || '')))
+      throw new UnauthorizedException();
+    const { password, ...studentInfo } = user;
+    return {
+      token: await this.jwtServise.signAsync({
+        id: user.id,
+        username: user.username,
+        role: studentInfo,
+      }),
+    };
+  }
 }

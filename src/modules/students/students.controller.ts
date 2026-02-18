@@ -9,11 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  ParseUUIDPipe,
 } from '@nestjs/common';
-import { StaffsService } from './staffs.service';
-import { CreateStaffDto } from './dto/create-staff-dto';
-import { UpdateStaffDto } from './dto/update-staff.dto';
 import { TokenGuard } from 'src/common/guards/token.guard';
 import {
   ApiBearerAuth,
@@ -27,14 +23,17 @@ import { Role } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-@Controller('staffs')
+import { StudentsService } from './students.service';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateStudentDto } from './dto/update-student.dto';
 @ApiBearerAuth('token')
-export class StaffsController {
-  constructor(private readonly staffsService: StaffsService) {}
+@Controller('students')
+export class StudentsController {
+  constructor(private readonly studentsService: StudentsService) {}
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin)
+  @Roles(Role.superadmin,Role.admin)
   @Post()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -44,12 +43,9 @@ export class StaffsController {
         first_name: { type: 'string' },
         last_name: { type: 'string' },
         password: { type: 'string' },
-        role: { type: 'string' },
-        position: { type: 'string' },
         phone: { type: 'string' },
         adress: { type: 'string' },
         status: { type: 'string' },
-        email: { type: 'string' },
         photo: {
           type: 'string',
           format: 'binary',
@@ -78,13 +74,13 @@ export class StaffsController {
     }),
   )
   async create(
-    @Body() createStaffDto: CreateStaffDto,
+    @Body() createStudentDto: CreateStudentDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const photoPath = file ? file.filename : null;
-    const { photo, ...stafinfo } = createStaffDto;
-    const result = await this.staffsService.create({
-      ...stafinfo,
+    const { photo, ...studentinfo } = createStudentDto;
+    const result = await this.studentsService.create({
+      ...studentinfo,
       photo: photoPath,
     });
     return {
@@ -93,40 +89,23 @@ export class StaffsController {
       staff: result,
     };
   }
-
-  @ApiOperation({ summary: `${Role.superadmin}` })
-  @Roles(Role.superadmin)
-  @UseGuards(TokenGuard, RoleGuard)
   @Get()
-  async findAll() {
-    const result = await this.staffsService.findAll();
-    return { success: true, count: result.length, staffs: result };
+  findAll() {
+    return this.studentsService.findAll();
   }
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
-  @Roles(Role.superadmin, Role.admin)
-  @UseGuards(TokenGuard, RoleGuard)
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.staffsService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.studentsService.findOne(+id);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
-  @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin)
   @Patch(':id')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateStaffDto: UpdateStaffDto,
-  ) {
-    return this.staffsService.update(id, updateStaffDto);
+  update(@Param('id') id: string, @Body() updateStudentDto: UpdateStudentDto) {
+    return this.studentsService.update(+id, updateStudentDto);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
-  @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin)
   @Delete(':id')
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.staffsService.remove(id);
+  remove(@Param('id') id: string) {
+    return this.studentsService.remove(+id);
   }
 }

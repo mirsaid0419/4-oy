@@ -3,9 +3,15 @@ import { UpdateStaffDto } from './dto/update-staff.dto';
 import { PrismaServise } from 'src/core/db/prisma.service';
 import { CreateStaffDto } from './dto/create-staff-dto';
 import * as bcrypt from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
+import { EmailServise } from 'src/common/email/email.service';
+
 @Injectable()
 export class StaffsService {
-  constructor(private prisma: PrismaServise) {}
+  constructor(
+    private prisma: PrismaServise,
+    private readonly emailService: EmailServise,
+  ) {}
   async create(createStaffDto: CreateStaffDto) {
     const existStaff = await this.prisma.staff.findUnique({
       where: { username: createStaffDto.username },
@@ -17,6 +23,11 @@ export class StaffsService {
         password: await bcrypt.hash(createStaffDto.password, 10),
       },
     });
+    await this.emailService.sendEmail(
+      createStaffDto.email,
+      createStaffDto.password,
+      createStaffDto.username,
+    );
     return result;
   }
 
@@ -33,6 +44,6 @@ export class StaffsService {
   }
 
   remove(id: string) {
-    return this.prisma.staff.delete({where:{id}})
+    return this.prisma.staff.delete({ where: { id } });
   }
 }

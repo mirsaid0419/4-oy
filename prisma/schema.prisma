@@ -146,32 +146,45 @@ datasource db {
 //   groups   Groups   @relation(fields: [group_id], references: [id])
 // }
 
+model Rooms {
+  id     String     @id @default(uuid())
+  name   String     @unique
+  status RoomStatus @default(active)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  groups     Groups[]
+}
+
+enum RoomStatus {
+  active
+  inactive
+}
+
 model Teacher {
   id             String @id @default(uuid())
   specialization String @db.VarChar(100)
   education      String @db.VarChar(100)
   experience     Int
 
-  // Staff bilan bog'lanish (One-to-One)
   staffId String @unique
   staff   Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  groups     Groups[]
 
   @@map("teachers")
 }
 
-// Staff modeliga ham mana bu qatorni qo'shib qo'ying (agar yo'q bo'lsa):
-// teacher  Teacher?
-
 model Staff {
-  id         String @id @default(uuid())
-  first_name String @db.VarChar(100)
-  last_name  String @db.VarChar(100)
-  username   String @unique @db.VarChar(50)
-  password   String @db.VarChar(255)
-  // photo      String @db.VarCHar(255)
+  id         String  @id @default(uuid())
+  first_name String  @db.VarChar(100)
+  last_name  String  @db.VarChar(100)
+  username   String  @unique @db.VarChar(50)
+  password   String  @db.VarChar(255)
+  photo      String? @db.VarChar(255)
+  email      String  @unique
 
   role Role @default(teacher)
 
@@ -184,7 +197,7 @@ model Staff {
 
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
-  groups      Group[]
+  groups      Groups[]
   lessons     Lesson[]
   attendances Attendance[]
   payments    Payment[]
@@ -233,20 +246,18 @@ enum StudentStatus {
 }
 
 model Course {
-  id          String  @id @default(uuid())
-  name        String  @db.VarChar(100)
-  description String? @db.Text
-  price       Int
-  duration    Int
+  id             String   @id @default(uuid())
+  name           String   @unique
+  description    String?
+  price          Decimal
+  duration_month Int
+  duration_hours Int
+  level          Level    @default(beginner)
+  status         Status   @default(active)
+  created_at     DateTime @default(now())
+  update_at      DateTime @updatedAt
 
-  level Level? @default(beginner)
-
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  groups     Group[]
-
-  @@map("courses")
+  groups Groups[]
 }
 
 enum Level {
@@ -255,49 +266,48 @@ enum Level {
   advanced
 }
 
-model Group {
-  id           String      @id @default(uuid())
-  name         String      @db.VarChar(50)
-  course_id    String
-  teacher_id   String
-  start_date   DateTime    @db.Date
-  end_date     DateTime?   @db.Date
-  schedule     String?     @db.Text
-  max_students Int         @default(20)
-  status       GroupStatus @default(planned)
-  created_at   DateTime    @default(now())
-  updated_at   DateTime    @updatedAt
-
-  course        Course         @relation(fields: [course_id], references: [id])
-  teacher       Staff          @relation(fields: [teacher_id], references: [id])
-  studentGroups StudentGroup[]
-  lessons       Lesson[]
-  payments      Payment[]
-  schedules     Schedule[]
-
-  @@map("groups")
-}
-
 enum GroupStatus {
   planned
   active
   completed
 }
 
+model Groups {
+  id           String      @id @default(uuid())
+  name         String
+  description  String?
+  course_id    String
+  teacher_id   String
+  room_id      String
+  start_date   DateTime
+  week_day     String[]
+  start_time   String
+  max_students Int         @default(20)
+  status       GroupStatus @default(planned)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @default(now())
+
+  course        Course         @relation(fields: [course_id], references: [id])
+  teacher       Teacher        @relation(fields: [teacher_id], references: [id])
+  rooms         Rooms          @relation(fields: [room_id], references: [id])
+  studentGroups StudentGroup[]
+  staff         Staff?         @relation(fields: [staffId], references: [id])
+  staffId       String?
+  lessons       Lesson[]
+  payments      Payment[]
+  schedules     Schedule[]
+}
+
 model StudentGroup {
-  id         String             @id @default(uuid())
+  id         String   @id @default(ulid())
   student_id String
   group_id   String
-  join_date  DateTime?          @default(now()) @db.Date
-  status     StudentGroupStatus @default(active)
-  created_at DateTime           @default(now())
-  updated_at DateTime           @updatedAt
+  status     Status   @default(active)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
-  student Student @relation(fields: [student_id], references: [id])
-  group   Group   @relation(fields: [group_id], references: [id])
-
-  @@unique([student_id, group_id])
-  @@map("student_groups")
+  students Student @relation(fields: [student_id], references: [id])
+  groups   Groups  @relation(fields: [group_id], references: [id])
 }
 
 enum StudentGroupStatus {
@@ -319,7 +329,7 @@ model Lesson {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  group       Group        @relation(fields: [group_id], references: [id])
+  group       Groups       @relation(fields: [group_id], references: [id])
   creator     Staff        @relation(fields: [created_by], references: [id])
   attendances Attendance[]
 
@@ -374,7 +384,7 @@ model Payment {
   updated_at     DateTime      @updatedAt
 
   student Student @relation(fields: [student_id], references: [id])
-  group   Group   @relation(fields: [group_id], references: [id])
+  group   Groups  @relation(fields: [group_id], references: [id])
   creator Staff   @relation(fields: [created_by], references: [id])
 
   @@map("payments")
@@ -396,7 +406,7 @@ model Schedule {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  group Group @relation(fields: [group_id], references: [id])
+  group Groups @relation(fields: [group_id], references: [id])
 
   @@unique([group_id, day, start_time])
   @@map("schedule")

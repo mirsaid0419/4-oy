@@ -13,6 +13,9 @@ async function bootstrap() {
     }),
   );
   const config = new DocumentBuilder()
+    .setTitle('CRM Educational Center API')
+    .setDescription(`O'quv markazi uchun backend tizimi API hujjatlari`)
+    .setVersion('1.0')
     .addBearerAuth(
       {
         type: 'http',
