@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class StaffLoginDto {
   @ApiProperty({
-    example: 'salim',
+    example: 'mirsaid',
   })
   @IsString()
   @IsNotEmpty()
@@ -11,7 +11,7 @@ export class StaffLoginDto {
   @MaxLength(50)
   username: string;
 
-  @ApiProperty({ example: 'ab1234567' })
+  @ApiProperty({ example: 'ab9572010' })
   @IsString()
   @IsNotEmpty()
   @MinLength(6)

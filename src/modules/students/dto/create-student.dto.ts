@@ -7,6 +7,7 @@ import {
   MinLength,
   MaxLength,
   IsEmail,
+  IsDateString,
 } from 'class-validator';
 import { StudentStatus } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
@@ -23,6 +24,10 @@ export class CreateStudentDto {
   @IsNotEmpty()
   @MaxLength(100)
   last_name: string;
+
+  @IsOptional() 
+  @IsDateString()
+  birth_date?: string;
 
   @ApiProperty({ example: 'mirsaid' })
   @IsString()
@@ -64,4 +69,5 @@ export class CreateStudentDto {
   @IsOptional()
   @ApiProperty({ type: 'string', format: 'binary', required: false })
   photo?: string | any;
+
 }

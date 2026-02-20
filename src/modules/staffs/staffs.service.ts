@@ -3,7 +3,6 @@ import { UpdateStaffDto } from './dto/update-staff.dto';
 import { PrismaServise } from 'src/core/db/prisma.service';
 import { CreateStaffDto } from './dto/create-staff-dto';
 import * as bcrypt from 'bcrypt';
-import { MailerService } from '@nestjs-modules/mailer';
 import { EmailServise } from 'src/common/email/email.service';
 
 @Injectable()

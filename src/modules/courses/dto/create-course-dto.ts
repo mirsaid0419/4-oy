@@ -35,7 +35,7 @@ export class CreateCourseDto {
   @IsNumber()
   duration_hours: number;
 
-  @ApiProperty()
+  @ApiProperty({enum:Level,example:Level.beginner})
   @IsEnum(Level)
   level: Level;
 }

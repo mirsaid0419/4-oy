@@ -8,14 +8,21 @@ import {
   Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { CreateCourseDto } from './dto/create-course-dto';
 import { CoursesService } from './courses.service';
-import { Role } from '@prisma/client';
+import { Level, Role } from '@prisma/client';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { TokenGuard } from 'src/common/guards/token.guard';
 import { Roles } from 'src/common/decorators/role';
+import { FileInterceptor } from '@nestjs/platform-express';
 @ApiBearerAuth('token')
 @Controller('courses')
 export class CoursesController {

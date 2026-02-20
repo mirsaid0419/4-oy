@@ -1,10 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Day } from '@prisma/client';
 import {
   ArrayNotEmpty,
   IsArray,
   IsDateString,
-  IsEnum,
   IsMilitaryTime,
   IsNotEmpty,
   IsNumber,
@@ -24,19 +22,16 @@ export class CreateGroupDto {
   description: string;
 
   @ApiProperty()
-  @IsNumber()
   @IsNotEmpty()
   @IsUUID()
   course_id: string;
 
   @ApiProperty()
-  @IsNumber()
   @IsNotEmpty()
   @IsUUID()
   teacher_id: string;
 
   @ApiProperty()
-  @IsNumber()
   @IsNotEmpty()
   @IsUUID()
   room_id: string;
@@ -46,9 +41,17 @@ export class CreateGroupDto {
   start_date: string;
 
   @ApiPropertyOptional({
-    example: Day.Monday,
+    example: [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ],
+    type: [String],
   })
-  @IsEnum(Day)
   @IsArray()
   @ArrayNotEmpty()
   @IsString({ each: true })

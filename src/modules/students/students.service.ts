@@ -4,46 +4,68 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaServise } from 'src/core/db/prisma.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
+import { EmailServise } from 'src/common/email/email.service';
 
 @Injectable()
 export class StudentsService {
   constructor(
     private prisma: PrismaServise,
-    private readonly emailService: MailerService,
+    private readonly emailService: EmailServise,
   ) {}
   async create(createStudentDto: CreateStudentDto) {
-    const existStudent = await this.prisma.student.findUnique({
-      where: { username: createStudentDto.username },
+    const existStudent = await this.prisma.student.findFirst({
+      where: {
+        OR: [
+          { username: createStudentDto.username },
+          { email: createStudentDto.email },
+        ],
+      },
     });
-    if (existStudent) throw new ConflictException('User name already added');
+    if (existStudent)
+      throw new ConflictException('User name or email already added');
     const result = await this.prisma.student.create({
       data: {
         ...createStudentDto,
         password: await bcrypt.hash(createStudentDto.password, 10),
+        birth_date: createStudentDto.birth_date
+          ? new Date(createStudentDto.birth_date)
+          : null,
       },
     });
-    await this.emailService.sendMail({
-      to: createStudentDto.email,
-      subject: 'CRM tizimiga kirish uchun login va parol',
-      html: `<b>Login: ${createStudentDto.username},</b><br>
-        <b>Paroll: ${createStudentDto.password}</b>`,
-    });
+    await this.emailService.sendEmail(
+      createStudentDto.email,
+      createStudentDto.password,
+      createStudentDto.username,
+    );
     return result;
   }
 
-  findAll() {
-    return `This action returns all students`;
+  async findAll() {
+    return {
+      success: true,
+      data: await this.prisma.student.findMany({ where: { status: 'active' } }),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
+  async findOne(id: string) {
+    return {
+      success: true,
+      data: await this.prisma.student.findFirst({ where: { id } }),
+    };
   }
 
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
+  async update(id: string, updateStudentDto: UpdateStudentDto) {
+    return {
+      success: true,
+      data: await this.prisma.student.update({
+        where: { id },
+        data: updateStudentDto,
+      }),
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} student`;
+  async remove(id: string) {
+    await this.prisma.student.delete({ where: { id } });
+    return { success: true, message: 'Student success deleted' };
   }
 }

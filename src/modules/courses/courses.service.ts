@@ -14,7 +14,7 @@ export class CoursesService {
   
   async create(payload: CreateCourseDto) {
     const existCourse = await this.prisma.course.findUnique({
-      where: { name: payload.name },
+      where: { name: payload.name }
     });
     if (existCourse) throw new ConflictException('Course already added');
     await this.prisma.course.create({ data: payload });

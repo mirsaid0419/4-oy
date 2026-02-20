@@ -8,37 +8,28 @@ import { EmailModule } from './common/email/email.module';
 import { RoomsModule } from './modules/rooms/rooms.module';
 import { CoursesModule } from './modules/courses/courses.module';
 import { GroupsModule } from './modules/groups/groups.module';
+import { PrismaModule } from './core/db/prisma.module';
+import { StudentsModule } from './modules/students/students.module';
+import { StudentGroupsModule } from './modules/groups/student-groups/student-groups.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
-    TeachersModule,
-    AuthModule,
     StaffsModule,
+    TeachersModule,
+    StudentsModule,
+    StudentGroupsModule,
+    RoomsModule,
+    CoursesModule,
+    GroupsModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_KEY,
       signOptions: { expiresIn: '1h' },
     }),
     EmailModule,
-    RoomsModule,
-    CoursesModule,
-    GroupsModule,
-    // MailerModule.forRoot({
-    //   transport: {
-    //     host: 'abduqulovmirsai0419@gmail.com',
-    //     port: 465,
-    //     secure: true,
-    //     auth: {
-    //       user: 'abduqulovmirsai0419@gmail.com',
-    //       pass: 'bogo zdlh ecfg wjtr',
-    //     },
-    //   },
-    //   defaults: {
-    //     from: '"No Reply" <abduqulovmirsai0419@gmail.com>',
-    //   },
-    // }),
+    PrismaModule,
   ],
   controllers: [],
   providers: [],
