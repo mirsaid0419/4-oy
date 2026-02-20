@@ -343,6 +343,7 @@ model Attendance {
   lesson_id  String
   teacher_id String
   staff_id String
+  student_id String
   created_by String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
