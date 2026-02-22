@@ -170,10 +170,13 @@ model Teacher {
   staffId String @unique
   staff   Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  groups     Groups[]
-  lessons    Lesson[]
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+  groups          Groups[]
+  lessons         Lesson[]
+  attendances     Attendance[]
+  homework        Homework[]
+  homeworkResults HomeworkResult[]
 
   @@map("teachers")
 }
@@ -198,11 +201,11 @@ model Staff {
 
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
-  groups      Groups[]
   lessons     Lesson[]
   attendances Attendance[]
   payments    Payment[]
   teacher     Teacher?
+  homework    Homework[]
 
   @@map("staffs")
 }
@@ -232,12 +235,14 @@ model Student {
 
   status StudentStatus @default(active)
 
-  enrollment_date   DateTime?          @default(now()) @db.Date
-  created_at        DateTime           @default(now())
-  updated_at        DateTime           @updatedAt
-  studentGroups     StudentGroup[]
-  attendanceDetails AttendanceDetail[]
-  payments          Payment[]
+  enrollment_date        DateTime?               @default(now()) @db.Date
+  created_at             DateTime                @default(now())
+  updated_at             DateTime                @updatedAt
+  studentGroups          StudentGroup[]
+  attendanceDetails      AttendanceDetail[]
+  payments               Payment[]
+  homeworkAnswerStudents HomeworkAnswerStudent[]
+  homeworkResults        HomeworkResult[]
 
   @@map("students")
 }
@@ -290,15 +295,16 @@ model Groups {
   created_at   DateTime    @default(now())
   updated_at   DateTime    @default(now())
 
-  course        Course         @relation(fields: [course_id], references: [id])
-  teacher       Teacher        @relation(fields: [teacher_id], references: [id])
-  rooms         Rooms          @relation(fields: [room_id], references: [id])
-  studentGroups StudentGroup[]
-  staff         Staff?         @relation(fields: [staffId], references: [id])
-  staffId       String?
-  lessons       Lesson[]
-  payments      Payment[]
-  schedules     Schedule[]
+  course                 Course                  @relation(fields: [course_id], references: [id])
+  teacher                Teacher                 @relation(fields: [teacher_id], references: [id])
+  rooms                  Rooms                   @relation(fields: [room_id], references: [id])
+  studentGroups          StudentGroup[]
+  lessons                Lesson[]
+  payments               Payment[]
+  schedules              Schedule[]
+  homework               Homework[]
+  homeworkAnswerStudents HomeworkAnswerStudent[]
+  homeworkResults        HomeworkResult[]
 }
 
 model StudentGroup {
@@ -324,7 +330,7 @@ model Lesson {
   group_id    String
   teacher_id  String?
   staff_id    String?
-  topic       String?  @db.VarChar(255)
+  topic       String   @db.VarChar(255)
   description String?  @db.Text
   status      Status   @default(active)
   created_at  DateTime @default(now())
@@ -334,6 +340,7 @@ model Lesson {
   teacher     Teacher?     @relation(fields: [teacher_id], references: [id])
   staff       Staff?       @relation(fields: [staff_id], references: [id])
   attendances Attendance[]
+  homework    Homework[]
 
   @@map("lessons")
 }
@@ -341,18 +348,65 @@ model Lesson {
 model Attendance {
   id         String   @id @default(uuid())
   lesson_id  String
-  teacher_id String
-  staff_id String
+  teacher_id String?
+  staff_id   String?
   student_id String
-  created_by String
+  isPresent  Boolean
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   lesson            Lesson             @relation(fields: [lesson_id], references: [id])
-  creator           Staff              @relation(fields: [created_by], references: [id])
+  staffs            Staff?             @relation(fields: [staff_id], references: [id])
+  teachers          Teacher?           @relation(fields: [teacher_id], references: [id])
   attendanceDetails AttendanceDetail[]
 
   @@map("attendance")
+}
+
+model Homework {
+  id         String   @id @default(uuid())
+  lesson_id  String
+  teacher_id String?
+  staff_id   String?
+  group_id   String
+  title      String
+  file       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  lesson     Lesson   @relation(fields: [lesson_id], references: [id])
+  staffs     Staff?   @relation(fields: [staff_id], references: [id])
+  teachers   Teacher? @relation(fields: [teacher_id], references: [id])
+  groups     Groups   @relation(fields: [group_id], references: [id])
+}
+
+model HomeworkAnswerStudent {
+  id          String   @id @default(uuid())
+  student_id  String
+  homework_id String
+  title       String
+  file        String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  students Student @relation(fields: [student_id], references: [id])
+  homework Groups  @relation(fields: [homework_id], references: [id])
+}
+
+model HomeworkResult {
+  id                 String   @id @default(uuid())
+  homework_answer_id String
+  teacher_id         String?
+  staff_id           String?
+  grade              Int
+  title              String
+  status             Boolean
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  teachers Teacher? @relation(fields: [teacher_id], references: [id])
+  staffs   Student? @relation(fields: [staff_id], references: [id])
+
+  homeworkAnswerStudent Groups @relation(fields: [homework_answer_id], references: [id])
 }
 
 model AttendanceDetail {

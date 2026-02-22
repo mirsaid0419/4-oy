@@ -18,10 +18,10 @@ import { Role, Status } from '@prisma/client';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/role';
 
+@ApiBearerAuth('token')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @ApiBearerAuth('token')
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin)
   @ApiConsumes('multipart/form-data')

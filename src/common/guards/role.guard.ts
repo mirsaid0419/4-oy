@@ -3,7 +3,6 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
-  Param,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 @Injectable()
@@ -13,12 +12,12 @@ export class RoleGuard implements CanActivate {
     const Roles: string[] = this.reflector.get('roles', context.getHandler());
     const req = context.switchToHttp().getRequest();
     const { id } = req.params;
+    if (Roles.includes(req.user.role)) {
+      return true;
+    }
     if (id && id == req.user.id) {
       return true;
     }
-    if (!Roles.includes(req.user.role)) {
-      throw new ForbiddenException("Sizga bu api ga ruxsat yo'q");
-    }
-    return true;
+    throw new ForbiddenException('Sizda bunday huquq mavjud emas');
   }
 }

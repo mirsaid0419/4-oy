@@ -60,53 +60,22 @@ export class StudentGroupsService {
             id: true,
             first_name: true,
             last_name: true,
-            email: true,
-            phone: true,
-            photo: true,
-            address: true,
-            birth_date: true,
-            status: true,
           },
         },
         groups: {
           select: {
             id: true,
             name: true,
-            description: true,
-            start_date: true,
-            week_day: true,
-            start_time: true,
-            max_students: true,
-            status: true,
-            staff: {
-              select: {
-                id: true,
-                first_name: true,
-                last_name: true,
-                email: true,
-                phone: true,
-                photo: true,
-                address: true,
-                status: true,
-              },
-            },
             course: {
               select: {
                 id: true,
                 name: true,
-                description: true,
-                price: true,
-                duration_month: true,
-                duration_hours: true,
-                level: true,
-                status: true,
               },
             },
             rooms: {
               select: {
                 id: true,
                 name: true,
-                status: true,
               },
             },
           },
@@ -131,15 +100,6 @@ export class StudentGroupsService {
           select: {
             id: true,
             name: true,
-            staff: {
-              select: {
-                id: true,
-                first_name: true,
-                last_name: true,
-                photo: true,
-                status: true,
-              },
-            },
             course: {
               select: {
                 id: true,

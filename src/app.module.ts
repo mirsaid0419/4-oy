@@ -11,6 +11,7 @@ import { GroupsModule } from './modules/groups/groups.module';
 import { PrismaModule } from './core/db/prisma.module';
 import { StudentsModule } from './modules/students/students.module';
 import { StudentGroupsModule } from './modules/groups/student-groups/student-groups.module';
+import { LessonsModule } from './modules/lessons/lessons.module';
 
 @Module({
   imports: [
@@ -19,9 +20,9 @@ import { StudentGroupsModule } from './modules/groups/student-groups/student-gro
     StaffsModule,
     TeachersModule,
     StudentsModule,
-    StudentGroupsModule,
     RoomsModule,
     CoursesModule,
+    StudentGroupsModule,
     GroupsModule,
     JwtModule.register({
       global: true,
@@ -30,6 +31,7 @@ import { StudentGroupsModule } from './modules/groups/student-groups/student-gro
     }),
     EmailModule,
     PrismaModule,
+    LessonsModule,
   ],
   controllers: [],
   providers: [],
