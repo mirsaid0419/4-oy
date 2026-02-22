@@ -1,0 +1,273 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+////////////////////
+/// ENUMS
+////////////////////
+
+enum Role {
+  user
+  admin
+  superadmin
+}
+
+enum SubscriptionStatus {
+  active
+  expired
+  canceled
+  pending_payment
+}
+
+enum PaymentMethod {
+  card
+  paypal
+  bank_transfer
+  crypto
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+enum SubscriptionType {
+  free
+  premium
+}
+
+enum VideoQuality {
+  p240
+  p360
+  p480
+  p720
+  p1080
+  p4K
+}
+
+////////////////////
+/// USERS
+////////////////////
+
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @unique @db.VarChar(50)
+  email         String    @unique @db.VarChar(100)
+  password  String    @db.VarChar(255)
+  role          Role      @default(user)
+  avatarUrl     String?   @db.VarChar(255)
+
+  createdAt     DateTime  @default(now())
+  updated_at  DateTime     @updatedAt
+
+  profile            Profile?
+  movies             Movie[]
+  subscriptions      UserSubscription[]
+  favorites          Favorite[]
+  reviews            Review[]
+  watchHistory       WatchHistory[]
+}
+
+////////////////////
+/// PROFILE
+////////////////////
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  fullName  String?  @db.VarChar(100)
+  phone     String?  @db.VarChar(20)
+  country   String?  @db.VarChar(50)
+
+  createdAt DateTime @default(now())
+  updated_at  DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+////////////////////
+/// SUBSCRIPTION PLAN
+////////////////////
+
+model SubscriptionPlan {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(50)
+  price        Decimal  @db.Decimal(10, 2)
+  durationDays Int
+  features     Json
+  isActive     Boolean  @default(true)
+
+  subscriptions UserSubscription[]
+}
+
+////////////////////
+/// USER SUBSCRIPTION
+////////////////////
+
+model UserSubscription {
+  id         Int                 @id @default(autoincrement())
+  userId     Int
+  planId     Int
+  startDate  DateTime            @default(now())
+  endDate    DateTime?
+  status     SubscriptionStatus  @default(pending_payment)
+  autoRenew  Boolean             @default(false)
+
+  createdAt  DateTime            @default(now())
+  updated_at  DateTime     @updatedAt
+
+  user  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan  SubscriptionPlan @relation(fields: [planId], references: [id])
+  payments Payment[]
+}
+
+////////////////////
+/// PAYMENTS
+////////////////////
+
+model Payment {
+  id                     Int           @id @default(autoincrement())
+  userSubscriptionId     Int
+  amount                 Decimal       @db.Decimal(10, 2)
+  paymentMethod          PaymentMethod
+  paymentDetails         Json?
+  status                 PaymentStatus
+  externalTransactionId  String?       @db.VarChar(100)
+  createdAt              DateTime      @default(now())
+
+  subscription UserSubscription @relation(fields: [userSubscriptionId], references: [id], onDelete: Cascade)
+}
+
+////////////////////
+/// CATEGORY
+////////////////////
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(50)
+  slug        String   @unique @db.VarChar(50)
+  description String?
+
+  movies MovieCategory[]
+}
+
+////////////////////
+/// MOVIE
+////////////////////
+
+model Movie {
+  id               Int               @id @default(autoincrement())
+  title            String            @db.VarChar(100)
+  slug             String            @unique @db.VarChar(100)
+  description      String?
+  releaseYear      Int
+  durationMinutes  Int
+  posterUrl        String?           @db.VarChar(255)
+  rating           Decimal?          @db.Decimal(3,1)
+  subscriptionType SubscriptionType  @default(free)
+  viewCount        Int               @default(0)
+  createdBy        Int
+
+  createdAt        DateTime          @default(now())
+  updated_at  DateTime     @updatedAt
+
+  creator        User             @relation(fields: [createdBy], references: [id])
+  categories     MovieCategory[]
+  files          MovieFile[]
+  favorites      Favorite[]
+  reviews        Review[]
+  watchHistory   WatchHistory[]
+}
+
+////////////////////
+/// MOVIE CATEGORY (M:N)
+////////////////////
+
+model MovieCategory {
+  id         Int @id @default(autoincrement())
+  movieId    Int
+  categoryId Int
+
+  movie    Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([movieId, categoryId])
+}
+
+////////////////////
+/// MOVIE FILES
+////////////////////
+
+model MovieFile {
+  id       Int          @id @default(autoincrement())
+  movieId  Int
+  fileUrl  String       @db.VarChar(255)
+  quality  VideoQuality
+  language String       @default("uz") @db.VarChar(20)
+
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+}
+
+////////////////////
+/// FAVORITES
+////////////////////
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  movieId   Int
+
+  createdAt DateTime @default(now())
+  updated_at  DateTime     @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+}
+
+////////////////////
+/// REVIEWS
+////////////////////
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  movieId   Int
+  rating    Int
+  comment   String?
+
+  createdAt DateTime @default(now())
+  updated_at  DateTime     @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+}
+
+////////////////////
+/// WATCH HISTORY
+////////////////////
+
+model WatchHistory {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  movieId           Int
+  watchedDuration   Int
+  watchedPercentage Decimal  @db.Decimal(5,2)
+  lastWatched       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+}
