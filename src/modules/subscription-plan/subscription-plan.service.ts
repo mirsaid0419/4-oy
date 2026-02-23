@@ -1,26 +1,76 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSubscriptionPlanDto } from './dto/create-subscription-plan.dto';
 import { UpdateSubscriptionPlanDto } from './dto/update-subscription-plan.dto';
+import { PrismaService } from 'src/core/db/prisma/prisma.service';
 
 @Injectable()
 export class SubscriptionPlanService {
-  create(createSubscriptionPlanDto: CreateSubscriptionPlanDto) {
-    return 'This action adds a new subscriptionPlan';
+  constructor(private readonly prisma: PrismaService) {}
+  async create(createSubscriptionPlanDto: CreateSubscriptionPlanDto) {
+    createSubscriptionPlanDto.name = createSubscriptionPlanDto.name
+      .trim()
+      .toLowerCase();
+    return {
+      success: true,
+      data: await this.prisma.subscriptionPlan.create({
+        data: createSubscriptionPlanDto,
+      }),
+    }; 
   }
 
-  findAll() {
-    return `This action returns all subscriptionPlan`;
+  async findAllActive() {
+    return {
+      success: true,
+      data: await this.prisma.subscriptionPlan.findMany({
+        where: { isActive: true },
+      }),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} subscriptionPlan`;
+  async findAllInActive() {
+    return {
+      success: true,
+      data: await this.prisma.subscriptionPlan.findMany({
+        where: { isActive: false },
+      }),
+    };
   }
 
-  update(id: number, updateSubscriptionPlanDto: UpdateSubscriptionPlanDto) {
-    return `This action updates a #${id} subscriptionPlan`;
+  async findOne(id: number) {
+    const data = await this.prisma.subscriptionPlan.findFirst({
+      where: { id },
+    });
+    if (!data) throw new NotFoundException('Plan not found');
+    return { success: true, data };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} subscriptionPlan`;
+  async update(
+    id: number,
+    updateSubscriptionPlanDto: UpdateSubscriptionPlanDto,
+  ) {
+    const data = await this.prisma.subscriptionPlan.findFirst({
+      where: { id },
+    });
+    if (!data) throw new NotFoundException('Plan not found');
+
+    if (updateSubscriptionPlanDto.name) {
+      updateSubscriptionPlanDto.name.trim().toLocaleLowerCase();
+    }
+    return {
+      success: true,
+      data: await this.prisma.subscriptionPlan.update({
+        where: { id },
+        data: updateSubscriptionPlanDto,
+      }),
+    };
+  }
+
+  async remove(id: number) {
+    const data = await this.prisma.subscriptionPlan.findFirst({
+      where: { id },
+    });
+    if (!data) throw new NotFoundException('Plan not found');
+    await this.prisma.subscriptionPlan.delete({ where: { id } });
+    return { success: true, message: 'Plan deleted' };
   }
 }

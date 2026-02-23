@@ -80,7 +80,14 @@ export class ProfileService {
     };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} profile`;
+  async remove(id: number) {
+    const existProfil = await this.prisma.profile.findFirst({
+      where: { userId: id },
+    });
+    if (existProfil) {
+      await this.prisma.profile.delete({ where: { userId: id } });
+      return { success: true, message: 'Profile success deleted' };
+    }
+    throw new NotFoundException('Profile not found');
   }
 }

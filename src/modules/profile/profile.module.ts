@@ -6,7 +6,7 @@ import { PrismaModule } from 'src/core/db/prisma/prisma.module';
 
 @Module({
   controllers: [ProfileController],
-  providers: [ProfileService, PrismaService],
+  providers: [ProfileService],
   imports: [PrismaModule],
 })
 export class ProfileModule {}

@@ -21,10 +21,11 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "username" VARCHAR(50) NOT NULL,
     "email" VARCHAR(100) NOT NULL,
-    "passwordHash" VARCHAR(255) NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'user',
     "avatarUrl" VARCHAR(255),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -37,6 +38,7 @@ CREATE TABLE "Profile" (
     "phone" VARCHAR(20),
     "country" VARCHAR(50),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
 );
@@ -63,6 +65,7 @@ CREATE TABLE "UserSubscription" (
     "status" "SubscriptionStatus" NOT NULL DEFAULT 'pending_payment',
     "autoRenew" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UserSubscription_pkey" PRIMARY KEY ("id")
 );
@@ -105,6 +108,7 @@ CREATE TABLE "Movie" (
     "viewCount" INTEGER NOT NULL DEFAULT 0,
     "createdBy" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Movie_pkey" PRIMARY KEY ("id")
 );
@@ -135,6 +139,7 @@ CREATE TABLE "Favorite" (
     "userId" INTEGER NOT NULL,
     "movieId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Favorite_pkey" PRIMARY KEY ("id")
 );
@@ -147,6 +152,7 @@ CREATE TABLE "Review" (
     "rating" INTEGER NOT NULL,
     "comment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Review_pkey" PRIMARY KEY ("id")
 );

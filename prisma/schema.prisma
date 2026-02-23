@@ -100,10 +100,10 @@ model Profile {
 model SubscriptionPlan {
   id           Int      @id @default(autoincrement())
   name         String   @db.VarChar(50)
-  price        Decimal  @db.Decimal(10, 2)
-  durationDays Int
-  features     Json
-  isActive     Boolean  @default(true)
+  price        Decimal?  @db.Decimal(10, 2)
+  durationDays Int?
+  features     Json?
+  isActive     Boolean?  @default(true)
 
   subscriptions UserSubscription[]
 }

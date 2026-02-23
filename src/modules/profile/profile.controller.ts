@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Optional,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';

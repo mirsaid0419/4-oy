@@ -9,11 +9,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import { UpdateAdminDto } from './dto/update-admin-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
+import { UserSubscriptionService } from '../user-subscription/user-subscription.service';
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
+    private readonly userSubscriptionService: UserSubscriptionService,
   ) {}
   async create(createUserDto: CreateAdminDto, avatar: Express.Multer.File) {
     const existUser = await this.prisma.user.findFirst({
@@ -44,6 +46,8 @@ export class UsersService {
       },
       select: { id: true, username: true, role: true, createdAt: true },
     });
+ 
+    await this.userSubscriptionService.create({planId:2,autoRenew:false},{id:data.id})
     return {
       success: true,
       message: "Ro'yxatdan muvaffaqiyatli o'tdingiz",

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from './core/db/prisma/prisma.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { SubscriptionPlanModule } from './modules/subscription-plan/subscription-plan.module';
@@ -15,19 +15,21 @@ import { ReviewModule } from './modules/review/review.module';
 import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-
 @Module({
   imports: [
-    AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    JwtModule.register({
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_KEY'),
+        signOptions: { expiresIn: '2h' },
+      }),
       global: true,
-      secret: process.env.JWT_KEY,
-      signOptions: { expiresIn: '2h' },
     }),
     PrismaModule,
-    UsersModule,
+    AuthModule,
     ProfileModule,
+    UsersModule,
     SubscriptionPlanModule,
     UserSubscriptionModule,
     PaymentModule,

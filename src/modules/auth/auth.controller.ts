@@ -83,16 +83,6 @@ export class AuthController {
   }
 
   @ApiConsumes('application/x-www-form-urlencoded') //swaggerdan json malumotlarni form data ko'rinishida kiritish kodi
-  // @ApiBody({
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       username: { type: 'string', example: 'Mirsaid' },
-  //       password: { type: 'string', example: '123456' },
-  //     },
-  //     required: ['username', 'password'],
-  //   },
-  // })
   @Post('login')
   login(@Body() payload: UserLoginDto) {
     return this.authService.login(payload);
