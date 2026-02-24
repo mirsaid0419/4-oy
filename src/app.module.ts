@@ -15,6 +15,7 @@ import { ReviewModule } from './modules/review/review.module';
 import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -26,6 +27,7 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       global: true,
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     AuthModule,
     ProfileModule,

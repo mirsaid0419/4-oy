@@ -15,7 +15,7 @@ export class SubscriptionPlanService {
       data: await this.prisma.subscriptionPlan.create({
         data: createSubscriptionPlanDto,
       }),
-    }; 
+    };
   }
 
   async findAllActive() {
@@ -66,11 +66,14 @@ export class SubscriptionPlanService {
   }
 
   async remove(id: number) {
-    const data = await this.prisma.subscriptionPlan.findFirst({
+    const data = await this.prisma.subscriptionPlan.findUnique({
       where: { id },
     });
     if (!data) throw new NotFoundException('Plan not found');
-    await this.prisma.subscriptionPlan.delete({ where: { id } });
+    await this.prisma.subscriptionPlan.update({
+      where: { id },
+      data: { isActive: false },
+    });
     return { success: true, message: 'Plan deleted' };
   }
 }

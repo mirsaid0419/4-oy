@@ -49,10 +49,4 @@ export class CreateSubscriptionPlanDto {
   @IsBoolean()
   @Type(() => Boolean)
   isActive?: boolean;
-
-  @ApiPropertyOptional({ example: true, description: 'Free plan flag' })
-  @IsOptional()
-  @IsBoolean()
-  @Type(() => Boolean)
-  isFree?: boolean;
 }

@@ -46,8 +46,11 @@ export class UsersService {
       },
       select: { id: true, username: true, role: true, createdAt: true },
     });
- 
-    await this.userSubscriptionService.create({planId:2,autoRenew:false},{id:data.id})
+
+    await this.userSubscriptionService.create(
+      { planId: 2, autoRenew: false },
+      { id: data.id },
+    );
     return {
       success: true,
       message: "Ro'yxatdan muvaffaqiyatli o'tdingiz",
@@ -102,7 +105,7 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    await this.prisma.user.delete({ where: { id } });
+    await this.prisma.user.update({ where: { id }, data: { isDeleted: true } });
     return { success: true, message: 'user success deleted' };
   }
 }

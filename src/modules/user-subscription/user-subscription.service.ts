@@ -7,10 +7,37 @@ import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
 import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
 import { SubscriptionStatus } from '@prisma/client';
+import { PaymentService } from '../payment/payment.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UserSubscriptionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly paymentService: PaymentService,
+  ) {}
+
+  @Cron(CronExpression.EVERY_MINUTE) // har 1 minutda ishlaydi
+  async handleExpiredSubscriptions() {
+    const now = new Date();
+
+    const expired = await this.prisma.userSubscription.updateMany({
+      where: {
+        status: SubscriptionStatus.active,
+        endDate: {
+          lt: now,
+        },
+      },
+      data: {
+        status: SubscriptionStatus.expired,
+      },
+    });
+
+    if (expired.count > 0) {
+      console.log(`${expired.count} subscription expired`);
+    }
+  }
+
   async create(
     createUserSubscriptionDto: CreateUserSubscriptionDto,
     user: { id: number },
@@ -25,7 +52,7 @@ export class UserSubscriptionService {
       where: {
         userId: user.id,
         planId: createUserSubscriptionDto.planId,
-        status: SubscriptionStatus.active,
+        // status: SubscriptionStatus.active,
       },
     });
 
@@ -37,7 +64,7 @@ export class UserSubscriptionService {
     if (existPlan.id == 2) {
       return {
         success: true,
-        data: this.prisma.userSubscription.create({
+        data: await this.prisma.userSubscription.create({
           data: {
             userId: user.id,
             planId: createUserSubscriptionDto.planId,
@@ -53,10 +80,15 @@ export class UserSubscriptionService {
       data: {
         userId: user.id,
         planId: createUserSubscriptionDto.planId,
-        status: 'pending_payment',
+        paymentMethod: createUserSubscriptionDto.paymentMethod,
+        status:
+          createUserSubscriptionDto.planId != 2
+            ? SubscriptionStatus.pending_payment
+            : SubscriptionStatus.active,
         autoRenew: createUserSubscriptionDto.autoRenew ?? false,
       },
     });
+    await this.paymentService.create(data.id);
     return { success: true, data };
   }
 
@@ -81,7 +113,8 @@ export class UserSubscriptionService {
     return {
       success: true,
       data: await this.prisma.userSubscription.findMany({
-        where: { userId: id, status: 'active' },
+        where: { userId: id },
+        // include: { plan: true },
       }),
     };
   }
@@ -107,6 +140,7 @@ export class UserSubscriptionService {
         success: true,
         data: await this.prisma.userSubscription.update({
           where: { id: existUser.id },
+          include: { plan: true },
           data: updateUserSubscriptionDto,
         }),
       };
