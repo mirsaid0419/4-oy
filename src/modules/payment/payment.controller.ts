@@ -40,7 +40,9 @@ export class PaymentController {
   create(@Param('subscriptionId', ParseIntPipe) id: number) {
     return this.paymentService.create(id);
   }
-
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.superadmin,Role.admin)
   @Get()
   findAll() {
     return this.paymentService.findAll();

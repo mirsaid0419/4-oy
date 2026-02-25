@@ -15,9 +15,9 @@ export class UserSubscriptionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly paymentService: PaymentService,
-  ) {}
+  ) { }
 
-  @Cron(CronExpression.EVERY_MINUTE) // har 1 minutda ishlaydi
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleExpiredSubscriptions() {
     const now = new Date();
 
@@ -36,6 +36,7 @@ export class UserSubscriptionService {
     if (expired.count > 0) {
       console.log(`${expired.count} subscription expired`);
     }
+    // console.log('Updated:', expired.count);
   }
 
   async create(
@@ -61,7 +62,7 @@ export class UserSubscriptionService {
     }
 
     const startDate = new Date();
-    if (existPlan.id == 2) {
+    if (existPlan.name.toLowerCase() == 'free') {
       return {
         success: true,
         data: await this.prisma.userSubscription.create({
@@ -82,9 +83,9 @@ export class UserSubscriptionService {
         planId: createUserSubscriptionDto.planId,
         paymentMethod: createUserSubscriptionDto.paymentMethod,
         status:
-          createUserSubscriptionDto.planId != 2
-            ? SubscriptionStatus.pending_payment
-            : SubscriptionStatus.active,
+          existPlan.name.toLowerCase() == 'free'
+            ? SubscriptionStatus.active
+            : SubscriptionStatus.pending_payment,
         autoRenew: createUserSubscriptionDto.autoRenew ?? false,
       },
     });

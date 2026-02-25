@@ -52,7 +52,7 @@ export class UsersController {
           enum: Object.values(Role),
           default: Role.user,
         },
-        avatar: { type: 'string', format: 'binary' },
+        avatarUrl: { type: 'string', format: 'binary' },
       },
       required: ['username', 'email', 'password'],
     },
@@ -60,15 +60,15 @@ export class UsersController {
   @Post()
   create(
     @Body() createUserDto: CreateAdminDto,
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile() avatarUrl: Express.Multer.File,
   ) {
-    return this.usersService.create(createUserDto, avatar);
+    return this.usersService.create(createUserDto, avatarUrl);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin)
-  @Get("all/users")
+  @Get('all/users')
   findAllUsers() {
     return this.usersService.findAllUsers();
   }
@@ -76,7 +76,7 @@ export class UsersController {
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin)
-  @Get("all/admins")
+  @Get('all/admins')
   findAllAdmins() {
     return this.usersService.findAllAdmins();
   }

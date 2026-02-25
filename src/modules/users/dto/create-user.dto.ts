@@ -5,13 +5,12 @@ import {
   MinLength,
   MaxLength,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'Mirsaid' })
   @IsString()
   @MinLength(3)
-  @MaxLength(50)
   username: string;
 
   @ApiProperty({ example: '@gmail.com' })
@@ -23,7 +22,7 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   avatarUrl?: string;

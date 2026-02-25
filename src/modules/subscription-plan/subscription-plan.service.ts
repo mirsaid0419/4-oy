@@ -5,7 +5,7 @@ import { PrismaService } from 'src/core/db/prisma/prisma.service';
 
 @Injectable()
 export class SubscriptionPlanService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   async create(createSubscriptionPlanDto: CreateSubscriptionPlanDto) {
     createSubscriptionPlanDto.name = createSubscriptionPlanDto.name
       .trim()
@@ -54,7 +54,7 @@ export class SubscriptionPlanService {
     if (!data) throw new NotFoundException('Plan not found');
 
     if (updateSubscriptionPlanDto.name) {
-      updateSubscriptionPlanDto.name.trim().toLocaleLowerCase();
+      updateSubscriptionPlanDto.name=updateSubscriptionPlanDto.name.trim().toLocaleLowerCase();
     }
     return {
       success: true,

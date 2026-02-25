@@ -23,7 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_KEY'),
-        signOptions: { expiresIn: '2h' },
+        signOptions: { expiresIn: '3h' },
       }),
       global: true,
     }),

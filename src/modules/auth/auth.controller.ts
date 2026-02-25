@@ -20,7 +20,7 @@ import { RoleGuard } from 'src/common/guards/role.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiConsumes('multipart/form-data')
@@ -74,12 +74,13 @@ export class AuthController {
       required: ['username', 'email', 'password', 'avatar'],
     },
   })
+  
   @Post('admin/register')
   adminRegister(
     @Body() createAdminDto: CreateAdminDto,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    return this.authService.userRegister(createAdminDto, avatar);
+    return this.authService.adminRegister(createAdminDto, avatar);
   }
 
   @ApiConsumes('application/x-www-form-urlencoded') //swaggerdan json malumotlarni form data ko'rinishida kiritish kodi

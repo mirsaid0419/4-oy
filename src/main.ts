@@ -23,7 +23,7 @@ async function bootstrap() {
       name: 'JWT',
       description: 'Tokenni kiriting',
       in: 'header',
-    })
+    }) 
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger/api', app, documentFactory, {

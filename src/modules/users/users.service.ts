@@ -6,7 +6,7 @@ import { extname, join } from 'path';
 import * as bcrypt from 'bcrypt';
 import { mkdirSync, writeFileSync } from 'fs';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
+import { Role, SubscriptionStatus } from '@prisma/client';
 import { UpdateAdminDto } from './dto/update-admin-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { UserSubscriptionService } from '../user-subscription/user-subscription.service';
@@ -18,44 +18,52 @@ export class UsersService {
     private readonly userSubscriptionService: UserSubscriptionService,
   ) {}
   async create(createUserDto: CreateAdminDto, avatar: Express.Multer.File) {
-    const existUser = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            username: createUserDto.username,
-          },
-          {
-            email: createUserDto.email,
-          },
-        ],
-      },
-    });
-    if (existUser)
-      throw new BadRequestException('User name or email already exist');
-    if (avatar) {
-      const file_name = Date.now() + '_image_' + extname(avatar.originalname);
-      createUserDto.avatarUrl = file_name;
-      const uploadPath = join(process.cwd(), 'src', 'uploads');
-      mkdirSync(uploadPath, { recursive: true });
-      writeFileSync(join(uploadPath, file_name), avatar.buffer);
-    }
-    const data = await this.prisma.user.create({
-      data: {
-        ...createUserDto,
-        password: await bcrypt.hash(createUserDto.password, 10),
-      },
-      select: { id: true, username: true, role: true, createdAt: true },
-    });
+    return this.prisma.$transaction(async (prisma) => {
+      const existUser = await prisma.user.findFirst({
+        where: {
+          OR: [
+            {
+              username: createUserDto.username,
+            },
+            {
+              email: createUserDto.email,
+            },
+          ],
+        },
+      });
+      if (existUser)
+        throw new BadRequestException('User name or email already exist');
+      if (avatar) {
+        const file_name = Date.now() + '_image_' + extname(avatar.originalname);
+        createUserDto.avatarUrl = file_name;
+        const uploadPath = join(process.cwd(), 'src', 'uploads');
+        mkdirSync(uploadPath, { recursive: true });
+        writeFileSync(join(uploadPath, file_name), avatar.buffer);
+      }
+      const data = await prisma.user.create({
+        data: {
+          ...createUserDto,
+          password: await bcrypt.hash(createUserDto.password, 10),
+        },
+        select: { id: true, username: true, role: true, createdAt: true }
+      });
 
-    await this.userSubscriptionService.create(
-      { planId: 2, autoRenew: false },
-      { id: data.id },
-    );
-    return {
-      success: true,
-      message: "Ro'yxatdan muvaffaqiyatli o'tdingiz",
-      data,
-    };
+
+      // await prisma.userSubscription.create({
+      //   data: {
+      //     userId: data.id,
+      //     planId: 2,
+      //     status: SubscriptionStatus.active,
+      //     autoRenew: false,
+      //     startDate: new Date(),
+        // },
+      // });
+      return {
+        success: true,
+        message: "Ro'yxatdan muvaffaqiyatli o'tdingiz",
+        data,
+      };
+    });
   }
 
   async findAllUsers() {

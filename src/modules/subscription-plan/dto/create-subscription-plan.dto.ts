@@ -19,7 +19,7 @@ export class CreateSubscriptionPlanDto {
   @MaxLength(50)
   name: string;
 
-  @ApiPropertyOptional({ example: 0, description: 'Free plan uchun 0 bo‘ladi' })
+  @ApiPropertyOptional({ example: 0, description: `Free plan uchun 0 bo'ladi` })
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Type(() => Number)
@@ -28,7 +28,7 @@ export class CreateSubscriptionPlanDto {
 
   @ApiPropertyOptional({
     example: 30,
-    description: 'Free plan uchun null yoki 0 bo‘lishi mumkin',
+    description: `Free plan uchun null yoki 0 bo'lishi mumkin`,
   })
   @IsOptional()
   @IsInt()

@@ -9,7 +9,7 @@ import { PrismaService } from 'src/core/db/prisma/prisma.service';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   async create(createProfileDto: CreateProfileDto, id: number) {
     const existUser = await this.prisma.profile.findFirst({
       where: { userId: id },
@@ -31,7 +31,7 @@ export class ProfileService {
 
   async findAll() {
     return {
-      succcess: true,
+      success: true,
       data: await this.prisma.profile.findMany({
         select: {
           userId: true,

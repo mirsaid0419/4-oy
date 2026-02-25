@@ -26,6 +26,7 @@ CREATE TABLE "User" (
     "avatarUrl" VARCHAR(255),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -47,10 +48,10 @@ CREATE TABLE "Profile" (
 CREATE TABLE "SubscriptionPlan" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(50) NOT NULL,
-    "price" DECIMAL(10,2) NOT NULL,
-    "durationDays" INTEGER NOT NULL,
-    "features" JSONB NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "price" DECIMAL(10,2),
+    "durationDays" INTEGER,
+    "features" JSONB,
+    "isActive" BOOLEAN DEFAULT true,
 
     CONSTRAINT "SubscriptionPlan_pkey" PRIMARY KEY ("id")
 );
@@ -66,6 +67,7 @@ CREATE TABLE "UserSubscription" (
     "autoRenew" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "paymentMethod" "PaymentMethod" DEFAULT 'card',
 
     CONSTRAINT "UserSubscription_pkey" PRIMARY KEY ("id")
 );
@@ -186,6 +188,9 @@ CREATE UNIQUE INDEX "Movie_slug_key" ON "Movie"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MovieCategory_movieId_categoryId_key" ON "MovieCategory"("movieId", "categoryId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "MovieFile_movieId_quality_language_key" ON "MovieFile"("movieId", "quality", "language");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Favorite_userId_movieId_key" ON "Favorite"("userId", "movieId");

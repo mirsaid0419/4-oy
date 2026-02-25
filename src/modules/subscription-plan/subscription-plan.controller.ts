@@ -33,9 +33,9 @@ export class SubscriptionPlanController {
     return this.subscriptionPlanService.create(createSubscriptionPlanDto);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.admin, Role.superadmin)
+  @Roles(Role.admin, Role.superadmin,Role.user)
   @Get("active")
   findAllActive() {
     return this.subscriptionPlanService.findAllActive();

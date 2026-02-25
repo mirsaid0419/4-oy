@@ -12,9 +12,9 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly userService: UsersService,
     private readonly jwt: JwtService,
-  ) {}
-  async userRegister(payloa: CreateUserDto, avatar: Express.Multer.File) {
-    return await this.userService.create(payloa, avatar);
+  ) { }
+  async userRegister(payload: CreateUserDto, avatar: Express.Multer.File) {
+    return await this.userService.create(payload, avatar);
   }
 
   async adminRegister(payload: CreateAdminDto, avatar: Express.Multer.File) {

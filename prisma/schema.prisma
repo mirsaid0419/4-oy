@@ -216,6 +216,8 @@ model MovieFile {
   language String       @default("uz") @db.VarChar(20)
 
   movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([movieId, quality, language])
 }
 
 ////////////////////
