@@ -12,7 +12,7 @@ import { MovieCategoryModule } from './modules/movie-category/movie-category.mod
 import { MovieFileModule } from './modules/movie-file/movie-file.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { ReviewModule } from './modules/review/review.module';
-import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
+// import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -41,7 +41,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MovieFileModule,
     FavoriteModule,
     ReviewModule,
-    WatchHistoryModule,
+    // WatchHistoryModule,
   ],
   controllers: [],
   providers: [],

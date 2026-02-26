@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsObject,
   Min,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -37,8 +38,10 @@ export class CreateSubscriptionPlanDto {
   @Min(0)
   durationDays?: number;
 
-  @ApiProperty({ enum: Object.values(SubscriptionType) })
-  subscriptionType: SubscriptionType;
+  @ApiProperty({ example: SubscriptionType.premium, enum: SubscriptionType })
+  @IsEnum(Object.values(SubscriptionType))
+  @IsOptional()
+  subscriptionType?: SubscriptionType;
 
   @ApiPropertyOptional({
     example: { quality: 'HD', ads: false },

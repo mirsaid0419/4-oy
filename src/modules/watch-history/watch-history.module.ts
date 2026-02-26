@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
-import { WatchHistoryService } from './watch-history.service';
-import { WatchHistoryController } from './watch-history.controller';
+// import { Module } from '@nestjs/common';
+// import { WatchHistoryService } from './watch-history.service';
+// import { WatchHistoryController } from './watch-history.controller';
+// import { PrismaModule } from 'src/core/db/prisma/prisma.module';
 
-@Module({
-  controllers: [WatchHistoryController],
-  providers: [WatchHistoryService],
-})
-export class WatchHistoryModule {}
+// @Module({
+//   controllers: [WatchHistoryController],
+//   providers: [WatchHistoryService],
+//   imports: [PrismaModule],
+// })
+// export class WatchHistoryModule {}

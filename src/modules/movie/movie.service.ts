@@ -13,13 +13,14 @@ import { extname, join } from 'path';
 import { PaginationDto } from './dto/paganation-movie.dto';
 import { unlinkSync, existsSync } from 'fs';
 import { MovieCategoryService } from '../movie-category/movie-category.service';
+import { Role, SubscriptionType } from '@prisma/client';
 
 @Injectable()
 export class MovieService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly movieCategory: MovieCategoryService,
-  ) {}
+  ) { }
 
   async create(
     createMovieDto: CreateMovieDto,
@@ -88,11 +89,26 @@ export class MovieService {
     return { success: true, data: movie };
   }
 
-  async findAll(query: PaginationDto) {
+  async findAll(query: PaginationDto, user: any) {
     const page = query.page ?? 1;
     const limit = Math.min(query.limit ?? 10, 50);
 
+    const userId = user.id;
+    const isAdmin = user.role === Role.admin || user.role === Role.superadmin;
+
+    const activeSubscription = await this.prisma.userSubscription.findFirst({
+      where: { userId, status: 'active' },
+      include: { plan: true },
+    });
+
+    const isPremium =
+      activeSubscription?.plan.subscriptionType === SubscriptionType.premium;
+
     let whereCondition: any = {};
+
+    if (!isPremium && !isAdmin) {
+      whereCondition.subscriptionType = SubscriptionType.free;
+    }
 
     const cleanSearch =
       typeof query?.search === 'string' ? query?.search.trim() : '';
@@ -103,11 +119,9 @@ export class MovieService {
         strict: true,
       });
 
-      whereCondition = {
-        slug: {
-          contains: searchSlug,
-          mode: 'insensitive',
-        },
+      whereCondition.slug = {
+        contains: searchSlug,
+        mode: 'insensitive',
       };
     }
 
@@ -139,7 +153,7 @@ export class MovieService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, user: any) {
     if (!id || isNaN(id)) {
       throw new BadRequestException('Invalid movie id');
     }
@@ -164,6 +178,24 @@ export class MovieService {
 
     if (!movie) {
       throw new NotFoundException('Movie not found');
+    }
+
+    const isAdmin = user.role === Role.admin || user.role === Role.superadmin;
+
+    if (movie.subscriptionType === SubscriptionType.premium && !isAdmin) {
+      const activeSubscription = await this.prisma.userSubscription.findFirst({
+        where: { userId: user.id, status: 'active' },
+        include: { plan: true },
+      });
+
+      const isPremium =
+        activeSubscription?.plan.subscriptionType === SubscriptionType.premium;
+
+      if (!isPremium) {
+        throw new ForbiddenException(
+          'This movie is only available for premium subscribers',
+        );
+      }
     }
 
     return {

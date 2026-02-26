@@ -8,7 +8,7 @@ export class CreateProfileDto {
   @IsOptional()
   @IsString()
   @MaxLength(100)
-  fullName?: string;
+  fullName: string;
 
   @ApiProperty({ example: '+998901234567', required: false })
   @Transform(({ value }) => (value === '' ? undefined : value))

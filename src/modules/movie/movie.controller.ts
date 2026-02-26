@@ -84,15 +84,17 @@ export class MovieController {
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @ApiQuery({ name: 'search', required: false, type: String })
   @Get()
-  async findAll(@Query() query: PaginationDto) {
-    return this.movieService.findAll(query);
+  async findAll(@Query() query: PaginationDto, @Req() req: any) {
+    return this.movieService.findAll(query, req.user);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @ApiParam({ name: 'id', type: Number })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.superadmin, Role.admin, Role.user)
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.movieService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+    return this.movieService.findOne(id, req.user);
   }
 
   @Patch(':id')

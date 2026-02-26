@@ -2,7 +2,7 @@ import { ConflictException, Injectable, InternalServerErrorException, NotFoundEx
 import { CreateFavoriteDto } from './dto/create-favorite.dto';
 import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role, SubscriptionType } from '@prisma/client';
 
 @Injectable()
 export class FavoriteService {
@@ -45,17 +45,36 @@ export class FavoriteService {
       throw new InternalServerErrorException('Serverda xatolik yuz berdi');
     }
   }
-  async findAll(userId: number) {
+  async findAll(user: any) {
+    const userId = user.id;
+    const isAdmin = user.role === Role.admin || user.role === Role.superadmin;
+
+    const activeSubscription = await this.prisma.userSubscription.findFirst({
+      where: { userId, status: 'active' },
+      include: { plan: true },
+    });
+
+    const isPremium =
+      activeSubscription?.plan.subscriptionType === SubscriptionType.premium;
+
+    let movieCondition: any = {};
+    if (!isPremium && !isAdmin) {
+      movieCondition.subscriptionType = SubscriptionType.free;
+    }
+
+    const favorites = await this.prisma.favorite.findMany({
+      where: {
+        userId: userId,
+        movie: movieCondition,
+      },
+      include: {
+        movie: true,
+      },
+    });
+
     return {
       success: true,
-      data: await this.prisma.favorite.findMany({
-        where: {
-          userId: userId,
-        },
-        include: {
-          movie: true,
-        },
-      }),
+      data: favorites,
     };
   }
 

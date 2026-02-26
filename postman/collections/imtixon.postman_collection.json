@@ -1,0 +1,664 @@
+{
+  "info": {
+    "_postman_id": "7e4afff1-5592-4523-9233-9fc7d93ecd29",
+    "name": "imtixon",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "staff",
+      "item": [
+        {
+          "name": "create",
+          "id": "e30270c3-cdba-47a4-967c-82f468e218df",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"branch\": \"697d8b9479f24bf4f8586c9b\",\r\n  \"user_name\": \"sattor\",\r\n  \"password\": \"1234567\",\r\n  \"birth_date\": \"1998-06-15\",\r\n  \"gender\": \"male\",\r\n  \"email\": \"sattor1@gmail.com\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/staff/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "staff",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getall",
+          "id": "bf71f60f-cb1c-4f3f-bec9-8c0464a8a934",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/staff/get",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "staff",
+                "get"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "id": "365462d4-88f6-4de9-9697-c644cc2cc667",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk4ODQ3OTYsImV4cCI6MTc2OTg4ODM5Nn0.8XawFegMJf6zd47Ou6-8cSH8oiwr8HgXlxxiEE3tb6g",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"user_name\":\"Mirsaid_Abduqulov\",\r\n    \"password\":\"ab9572010\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/staff/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "staff",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getById",
+          "id": "809a8b13-d86b-4778-8d5d-43a2b510392a",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "id": "3fc9b446-c3d4-4dc1-975e-5d4a8bed0cd2",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzYTg2YzkxMzkyM2E4MmI4NWVlNSIsInJvbGUiOiJTdGFmZiIsInVzZXJfbmFtZSI6InNhdHRvciIsImlhdCI6MTc2OTkyMzkwNywiZXhwIjoxNzY5OTI3NTA3fQ.ZpNmd4fXtk5xDZL_Q7VEwuC79jaoIS8yk4PIC2hsFUQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"password\":123456789\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/staff/put",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "staff",
+                "put"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "id": "c0dac9f8-5ee7-4e2c-bc1e-5024c0d64172",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5MjQ3MjYsImV4cCI6MTc2OTkyODMyNn0.c6A38ynfc0vL8zE16kko81PAdYjl8LtAbtuqZUjh-Y4",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/staff/delete/697e3a86c913923a82b85ee5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "staff",
+                "delete",
+                "697e3a86c913923a82b85ee5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateAdmin",
+          "id": "87244a93-a20b-40cf-b3e2-ec63b45d5d58",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5MjQ3MjYsImV4cCI6MTc2OTkyODMyNn0.c6A38ynfc0vL8zE16kko81PAdYjl8LtAbtuqZUjh-Y4",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"role\":\"Admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/staff/put/admin/697ee8af6a1e3372f54b83b9",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "staff",
+                "put",
+                "admin",
+                "697ee8af6a1e3372f54b83b9"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "9e14113b-8284-4b97-8dd0-fc86d9f30a38"
+    },
+    {
+      "name": "branch",
+      "item": [
+        {
+          "name": "create",
+          "id": "1b093d96-2f9e-4fd0-a547-e8e84996607b",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Sirdaryo_Sale_Avto\",\r\n    \"adres\":\"Sirdaryo\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/branch/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "branch",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getall",
+          "id": "1c8bd735-f7d3-4be4-8493-90f28c02611c",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/branch/all",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "branch",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getone",
+          "id": "3f6698ae-eb0b-4e86-85cc-98817a4f66cf",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "id": "65da6c48-723e-4cd5-bccf-d082f6c7adc6",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5MjQ3MjYsImV4cCI6MTc2OTkyODMyNn0.c6A38ynfc0vL8zE16kko81PAdYjl8LtAbtuqZUjh-Y4",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\":\"Tashkent kars\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/branch/put/697eef0c70f33e649cf307ac",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "branch",
+                "put",
+                "697eef0c70f33e649cf307ac"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "id": "e480f5f9-1915-4a2a-995e-c3c391ecb029",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ],
+      "id": "1415782e-25f0-4a9a-909a-20228a722666"
+    },
+    {
+      "name": "permission",
+      "item": [
+        {
+          "name": "getall",
+          "id": "d25529aa-c3e0-4f20-bbca-0e7e1f408408",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5MzEzODEsImV4cCI6MTc2OTkzNDk4MX0.LP3Bsny6iwftU4Xj0LlSSBfV7PMrH8OfGIkoRnw-W4U",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/permission/all",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "permission",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getbyid",
+          "id": "7a09f7b7-e193-4eb0-b6e4-9c911dd087fe",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5MzEzODEsImV4cCI6MTc2OTkzNDk4MX0.LP3Bsny6iwftU4Xj0LlSSBfV7PMrH8OfGIkoRnw-W4U",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/permission/get/697f0368510b79b9011e5c3c",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "permission",
+                "get",
+                "697f0368510b79b9011e5c3c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "id": "4cfd6afb-3160-4b8a-a2fc-3fed71114a68",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5MzEzODEsImV4cCI6MTc2OTkzNDk4MX0.LP3Bsny6iwftU4Xj0LlSSBfV7PMrH8OfGIkoRnw-W4U",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"permissionModel\":\"Transports\",\r\n    \"action\":\"update\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/permission/put/697f0368510b79b9011e5c3c",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "permission",
+                "put",
+                "697f0368510b79b9011e5c3c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "id": "117c7ada-c956-4807-a880-829f2a046f22",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ],
+      "id": "231ff0eb-faa6-4e39-812e-26ef366d4aaf"
+    },
+    {
+      "name": "transport",
+      "item": [
+        {
+          "name": "create",
+          "id": "128e201a-f767-4f6c-a64b-5554014c18e0",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5Mjg1MjYsImV4cCI6MTc2OTkzMjEyNn0.Q6sWLVoKYz3r5ZcIuqaxXsZbNodQ7ETyY-2HA3PcHsA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "postman-cloud:///1f0ff398-5a29-4990-aff0-8fc964d07be8"
+                },
+                {
+                  "key": "branch",
+                  "value": "697ef9f0ba22bab8265d1403",
+                  "type": "text"
+                },
+                {
+                  "key": "model",
+                  "value": "cobalt",
+                  "type": "text"
+                },
+                {
+                  "key": "color",
+                  "value": "qora",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "130000000",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/transport/create",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "transport",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getall",
+          "id": "c3a0aa77-e291-430c-a412-10ab45900b64",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5Mjg1MjYsImV4cCI6MTc2OTkzMjEyNn0.Q6sWLVoKYz3r5ZcIuqaxXsZbNodQ7ETyY-2HA3PcHsA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/transport/all",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "transport",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getbyid",
+          "id": "ef839e7e-b6cb-426f-97b1-3fb124124e9c",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "update",
+          "id": "085f0205-8512-4ce4-8d43-a6c75233cd9c",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5Mjg1MjYsImV4cCI6MTc2OTkzMjEyNn0.Q6sWLVoKYz3r5ZcIuqaxXsZbNodQ7ETyY-2HA3PcHsA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"model\":\"Malibu\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/transport/put/697efac87f75df881d9e9623",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "transport",
+                "put",
+                "697efac87f75df881d9e9623"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "id": "88009360-ee4a-4a05-aa8f-63971c39c5e7",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5N2UzNjUwYzIzMWNlZDM3MDk2YWFjNiIsInJvbGUiOiJTdXBlckFkbWluIiwidXNlcl9uYW1lIjoiTWlyc2FpZF9BYmR1cXVsb3YiLCJpYXQiOjE3Njk5Mjg1MjYsImV4cCI6MTc2OTkzMjEyNn0.Q6sWLVoKYz3r5ZcIuqaxXsZbNodQ7ETyY-2HA3PcHsA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"model\":\"Malibu\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/transport/delete/697efac87f75df881d9e9623",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "transport",
+                "delete",
+                "697efac87f75df881d9e9623"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "8f00b8a2-e479-46ca-87a8-0f2fafb7a852"
+    }
+  ]
+}

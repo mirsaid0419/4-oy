@@ -28,7 +28,7 @@ export class FavoriteController {
   @Roles(Role.user)
   @Get("my/all")
   findAll(@Req() req: Request) {
-    return this.favoriteService.findAll(req["user"]["id"]);
+    return this.favoriteService.findAll(req["user"]);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })

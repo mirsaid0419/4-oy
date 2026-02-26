@@ -1,0 +1,363 @@
+{
+  "info": {
+    "_postman_id": "e20cca3d-be6a-4bb4-8a21-804fc3e0b61a",
+    "name": "you tub",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "files",
+      "item": [
+        {
+          "name": "email",
+          "item": [
+            {
+              "name": "send sms",
+              "id": "1fff8579-b17d-4d9c-941d-ccb65bc9da3a",
+              "request": {
+                "method": "GET",
+                "header": []
+              },
+              "response": []
+            }
+          ],
+          "id": "a2a53b48-6fcf-4bff-a907-2db49cc04ec2"
+        },
+        {
+          "name": "save file",
+          "id": "b1fcbac4-f78b-4777-bc48-080b902d0524",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "salom",
+                  "type": "text"
+                },
+                {
+                  "key": "user_id",
+                  "value": "2",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "postman-cloud:///1f0eef25-7b21-43f0-9b35-394d88fa0358"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/files/save",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "files",
+                "save"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getOneUserVideo",
+          "id": "ea8a82f5-98af-4ea0-8195-b70998ee24fe",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "get all files",
+          "id": "e1e8b21d-8f36-494b-92f2-0771e66ac790",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "update file",
+          "id": "d4ee2b3b-f4b7-4ee0-8408-6601c84ca527",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 3,\r\n            \"title\": \"shapaloq\",\r\n            \"user_id\": 14\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/files/files",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "files",
+                "files"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "search file",
+          "id": "f8d36d43-c638-40f4-9124-c76c8c50a26f",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "delete file",
+          "id": "75b25515-990e-4146-80b9-eb095d72e257",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:2020/api/files/files/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "files",
+                "files",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get video",
+          "id": "6fdbaf04-df15-4927-ac64-66014001f220",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ],
+      "id": "2a72557a-7d03-4456-ad9d-8a60f8a3e3dd"
+    },
+    {
+      "name": "message",
+      "item": [
+        {
+          "name": "create message",
+          "id": "91dab073-05b6-4e0c-b9e1-4b95dae7de30",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcl9uYW1lIjoibWlyc2FpZDIiLCJpYXQiOjE3Njg5MTQxNTEsImV4cCI6MTc2OTAwMDU1MX0.4V1H-EHnXfqIayhXZ7wlYAyRhsWhdlY8RDSyqS2qCGY",
+                "type": "text"
+              },
+              {
+                "key": "message",
+                "value": "salom",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"message\":\"salom\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:2020/api/messages/create/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "2020",
+              "path": [
+                "api",
+                "messages",
+                "create",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get messages",
+          "id": "c888fa9b-4d0e-4c9f-9599-5ee195184ae7",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "create message",
+          "id": "3ec4552c-60bd-4d6f-8293-990b10dc6774",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ],
+      "id": "6fd1a40d-865a-4ea7-b19e-d1eb952d746d"
+    },
+    {
+      "name": "New Folder",
+      "item": [],
+      "id": "2a7563e1-f540-4b90-80f6-488a5fa13b45"
+    },
+    {
+      "name": "New Folder",
+      "item": [],
+      "id": "110090a2-9e8f-4855-b2b0-38e4a6e8240a"
+    },
+    {
+      "name": "userregistr",
+      "id": "7847ccfb-d941-401e-b8a9-8bebc34fa10e",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "postman-cloud:///1f0ee169-535f-4d40-8730-393cf4d2afe0"
+            },
+            {
+              "key": "user_name",
+              "value": "mirsaid736",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "ab123456",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:2020/api/users/registr",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "2020",
+          "path": [
+            "api",
+            "users",
+            "registr"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "refresh",
+      "id": "2c810e45-0301-4e7e-bb90-59d46c5524c8",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:2020/api/users/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "2020",
+          "path": [
+            "api",
+            "users",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAllUsers",
+      "id": "07048707-1f1d-4b8a-b351-11272f9f9f90",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:2020/api/users/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "2020",
+          "path": [
+            "api",
+            "users",
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "login",
+      "id": "7ff2adf0-8890-4fbd-a2a5-cf9ca4106c0f",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "token",
+            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTQsInVzZXJfbmFtZSI6Ik1pcnNhaWQ1NTUiLCJpYXQiOjE3NjgyMTI5MTMsImV4cCI6MTc2ODI5OTMxM30.uCC4pqURmlJbeGNMWaivD2gLniio5EnNp1cFKoY6y-A",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"user_name\": \"Mirsaid555\",\r\n    \"password\": \"ab9572010\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:2020/api/users/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "2020",
+          "path": [
+            "api",
+            "users",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

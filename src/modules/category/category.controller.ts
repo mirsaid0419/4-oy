@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -21,8 +22,8 @@ import { RoleGuard } from 'src/common/guards/role.guard';
 @ApiTags('category')
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
-  
+  constructor(private readonly categoryService: CategoryService) { }
+
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin)
@@ -43,8 +44,8 @@ export class CategoryController {
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin, Role.user)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.categoryService.findOne(+id, req.user);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })

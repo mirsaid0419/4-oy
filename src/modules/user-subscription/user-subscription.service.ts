@@ -46,7 +46,6 @@ export class UserSubscriptionService {
     const existPlan = await this.prisma.subscriptionPlan.findFirst({
       where: { id: createUserSubscriptionDto.planId, isActive: true },
     });
-
     if (!existPlan) throw new BadRequestException('This plan not found');
 
     const plan = await this.prisma.userSubscription.findFirst({

@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateWatchHistoryDto } from './create-watch-history.dto';
+// import { PartialType } from '@nestjs/swagger';
+// import { CreateWatchHistoryDto } from './create-watch-history.dto';
 
-export class UpdateWatchHistoryDto extends PartialType(CreateWatchHistoryDto) {}
+// export class UpdateWatchHistoryDto extends PartialType(CreateWatchHistoryDto) {}

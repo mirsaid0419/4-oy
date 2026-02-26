@@ -34,6 +34,7 @@ export class ProfileService {
       success: true,
       data: await this.prisma.profile.findMany({
         select: {
+          id:true,
           userId: true,
           fullName: true,
           phone: true,
@@ -62,13 +63,16 @@ export class ProfileService {
   }
 
   async update(id: number, updateProfileDto: UpdateProfileDto) {
+    const existUser=await this.prisma.profile.findUnique({where:{id}})
+    if(!existUser) throw new NotFoundException("Profile not found")
     return {
       success: true,
       message: 'Profil success updated',
       data: await this.prisma.profile.update({
-        where: { userId: id },
-        data: updateProfileDto,
+        where: { id },
+        data: {...updateProfileDto},
         select: {
+          id:true,
           userId: true,
           fullName: true,
           phone: true,
@@ -85,7 +89,7 @@ export class ProfileService {
       where: { userId: id },
     });
     if (existProfil) {
-      await this.prisma.profile.delete({ where: { userId: id } });
+      await this.prisma.profile.delete({ where: { id } });
       return { success: true, message: 'Profile success deleted' };
     }
     throw new NotFoundException('Profile not found');

@@ -8,11 +8,12 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import slugify from 'slugify'; //bu kutubxona categoryni url da qidirish uchun qulay holatga keltiradi
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
+import { Role, SubscriptionType } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly prisma: PrismaService) { }
-  
+
   async create(dto: CreateCategoryDto) {
     const name = dto.name.trim();
 
@@ -68,10 +69,35 @@ export class CategoryService {
     return { success: true, data: await this.prisma.category.findMany() };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, user: any) {
+    const userId = user.id;
+    const isAdmin = user.role === Role.admin || user.role === Role.superadmin;
+
+    const activeSubscription = await this.prisma.userSubscription.findFirst({
+      where: { userId, status: 'active' },
+      include: { plan: true },
+    });
+
+    const isPremium =
+      activeSubscription?.plan.subscriptionType === SubscriptionType.premium;
+
+    let movieCondition: any = {};
+    if (!isPremium && !isAdmin) {
+      movieCondition.subscriptionType = SubscriptionType.free;
+    }
+
     const category = await this.prisma.category.findUnique({
       where: { id },
-      include: { movies: true },
+      include: {
+        movies: {
+          where: {
+            movie: movieCondition,
+          },
+          include: {
+            movie: true,
+          },
+        },
+      },
     });
 
     if (!category) throw new NotFoundException('Category not found');

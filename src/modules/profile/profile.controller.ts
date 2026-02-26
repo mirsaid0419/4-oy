@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   Optional,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -54,10 +55,9 @@ export class ProfileController {
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.admin, Role.superadmin,Role.user)
-  @ApiConsumes('application/x-www-form-urlencoded')
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(+id, updateProfileDto);
+  @Patch(':id') 
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateProfileDto: UpdateProfileDto) {
+    return this.profileService.update(id, updateProfileDto);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
