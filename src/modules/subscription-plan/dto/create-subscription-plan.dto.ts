@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SubscriptionType } from '@prisma/client';
 
 export class CreateSubscriptionPlanDto {
   @ApiProperty({ example: 'Premium' })
@@ -35,6 +36,9 @@ export class CreateSubscriptionPlanDto {
   @Type(() => Number)
   @Min(0)
   durationDays?: number;
+
+  @ApiProperty({ enum: Object.values(SubscriptionType) })
+  subscriptionType: SubscriptionType;
 
   @ApiPropertyOptional({
     example: { quality: 'HD', ads: false },

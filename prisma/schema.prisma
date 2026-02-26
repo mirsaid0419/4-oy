@@ -105,7 +105,8 @@ model SubscriptionPlan {
   features     Json?
   isActive     Boolean? @default(true)
 
-  subscriptions UserSubscription[]
+  subscriptionType SubscriptionType   @default(free)
+  subscriptions    UserSubscription[]
 }
 
 ////////////////////

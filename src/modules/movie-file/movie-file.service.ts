@@ -90,7 +90,7 @@ export class MovieFileService {
       });
 
       const hasPremiumSubscription = activeSubscriptions.some(
-        (sub) => sub.plan.name.toLowerCase() !== 'free',
+        (sub) => sub.plan.subscriptionType !== 'free',
       );
 
       if (

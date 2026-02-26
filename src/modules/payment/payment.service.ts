@@ -7,7 +7,7 @@ import {
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus, SubscriptionType } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { Decimal } from '@prisma/client/runtime/client';
 
@@ -77,11 +77,19 @@ export class PaymentService {
       throw new ConflictException('Subscription already active');
     if (subscription.status === 'expired')
       throw new BadRequestException('Subscription expired. Please renew.');
+    if (subscription.plan.subscriptionType === SubscriptionType.free) {
+      throw new BadRequestException(
+        "Tekin obuna rejasi uchun to'lov yaratib bo'lmaydi",
+      );
+    }
+
     if (
       !subscription.plan?.price ||
       new Decimal(subscription.plan.price).lte(0)
     )
-      throw new BadRequestException('Invalid plan price');
+      throw new BadRequestException(
+        "Premium reja uchun narx belgilanmagan yoki noto'g'ri",
+      );
     if (!subscription.paymentMethod)
       throw new BadRequestException(
         'Payment method not set for this subscription',

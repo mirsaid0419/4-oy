@@ -6,7 +6,7 @@ import {
 import { CreateUserSubscriptionDto } from './dto/create-user-subscription.dto';
 import { UpdateUserSubscriptionDto } from './dto/update-user-subscription.dto';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
-import { SubscriptionStatus } from '@prisma/client';
+import { SubscriptionStatus, SubscriptionType } from '@prisma/client';
 import { PaymentService } from '../payment/payment.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
@@ -15,7 +15,7 @@ export class UserSubscriptionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly paymentService: PaymentService,
-  ) { }
+  ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleExpiredSubscriptions() {
@@ -62,7 +62,7 @@ export class UserSubscriptionService {
     }
 
     const startDate = new Date();
-    if (existPlan.name.toLowerCase() == 'free') {
+    if (existPlan.subscriptionType == SubscriptionType.free) {
       return {
         success: true,
         data: await this.prisma.userSubscription.create({
@@ -82,10 +82,7 @@ export class UserSubscriptionService {
         userId: user.id,
         planId: createUserSubscriptionDto.planId,
         paymentMethod: createUserSubscriptionDto.paymentMethod,
-        status:
-          existPlan.name.toLowerCase() == 'free'
-            ? SubscriptionStatus.active
-            : SubscriptionStatus.pending_payment,
+        status: "pending_payment",
         autoRenew: createUserSubscriptionDto.autoRenew ?? false,
       },
     });

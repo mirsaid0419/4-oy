@@ -6,34 +6,25 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ReviewService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
-  async handleRaitingUpdate() {
-    const reviews = await this.prisma.review.findMany({
-      select: {
-        movieId: true,
+  async handleRatingUpdate() {
+    const grouped = await this.prisma.review.groupBy({
+      by: ['movieId'],
+      _avg: {
         rating: true,
       },
     });
-    const movieIds = reviews.map((review) => review.movieId);
-    const movies = await this.prisma.movie.findMany({
-      where: {
-        id: {
-          in: movieIds,
+
+    for (const item of grouped) {
+      await this.prisma.movie.update({
+        where: { id: item.movieId },
+        data: {
+          rating: item._avg.rating ?? 0,
         },
-      },
-    });
-
-    movies.forEach(movie => {
-      const rating = reviews.filter((review) => review.movieId == movie.id)
-      .reduce((acc, review) => acc + review.rating, 0);
-      this.prisma.movie.update({
-        where: { id: movie.id },
-        data: { rating: rating / reviews.length },
       });
-    })
-
+    }
   }
 
   async create(createReviewDto: CreateReviewDto, userId: number) {
@@ -41,7 +32,9 @@ export class ReviewService {
       where: { id: createReviewDto.movieId },
     });
     if (!movieExists) {
-      throw new NotFoundException(`ID-si ${createReviewDto.movieId} bo'lgan kino topilmadi!`);
+      throw new NotFoundException(
+        `ID-si ${createReviewDto.movieId} bo'lgan kino topilmadi!`,
+      );
     }
     return await this.prisma.review.create({
       data: {

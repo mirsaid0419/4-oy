@@ -43,26 +43,26 @@ export class ProfileController {
     return this.profileService.findAll();
   }
 
-  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.admin, Role.superadmin)
+  @Roles(Role.admin, Role.superadmin,Role.user)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.profileService.findOne(+id);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.admin, Role.superadmin)
+  @Roles(Role.admin, Role.superadmin,Role.user)
   @ApiConsumes('application/x-www-form-urlencoded')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
     return this.profileService.update(+id, updateProfileDto);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.admin, Role.superadmin)
+  @Roles(Role.admin, Role.superadmin,Role.user)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.profileService.remove(+id);
