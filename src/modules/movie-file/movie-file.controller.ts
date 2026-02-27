@@ -69,7 +69,7 @@ export class MovieFileController {
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin, Role.admin,Role.user)
+  @Roles(Role.superadmin, Role.admin, Role.user)
   @Get('watch/:id')
   async watchVideo(
     @Param('id', ParseIntPipe) id: number,
@@ -81,20 +81,20 @@ export class MovieFileController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.movieFileService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+    return this.movieFileService.findOne(id, Number(req['user']['id']));
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateMovieFileDto: UpdateMovieFileDto,
   ) {
-    return this.movieFileService.update(+id, updateMovieFileDto);
+    return this.movieFileService.update(id, updateMovieFileDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.movieFileService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.movieFileService.remove(id);
   }
 }

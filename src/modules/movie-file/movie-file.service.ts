@@ -7,25 +7,30 @@ import {
 import { CreateMovieFileDto } from './dto/create-movie-file.dto';
 import { UpdateMovieFileDto } from './dto/update-movie-file.dto';
 import { extname, join } from 'path';
-import { createReadStream, mkdirSync, statSync, writeFileSync } from 'fs';
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from 'fs';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 
 @Injectable()
 export class MovieFileService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
   async create(
     createMovieFileDto: CreateMovieFileDto,
     file: Express.Multer.File,
   ) {
     const language = createMovieFileDto.language?.trim().toLowerCase();
-    // if (file) {
     const file_name = Date.now() + '_video_' + extname(file.originalname);
     const uploadPath = join(process.cwd(), 'src', 'uploads', 'videos');
     mkdirSync(uploadPath, { recursive: true });
     writeFileSync(join(uploadPath, file_name), file.buffer);
-    // }
     try {
       const result = await this.prisma.$transaction(async (prisma) => {
         const movie = await prisma.movie.findUnique({
@@ -143,25 +148,81 @@ export class MovieFileService {
         createReadStream(videoPath).pipe(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new NotFoundException('Faylni yuklashda xatolik yuz berdi');
     }
   }
 
-  async findOne(id: number) {
-    return {
-      success: true,
-      data: await this.prisma.movieFile.findUnique({ where: { id } }),
-    };
+  async findOne(id: number, userId: number) {
+    const file = await this.prisma.movieFile.findUnique({
+      where: { id },
+      include: { movie: true },
+    });
+
+    if (!file) {
+      throw new NotFoundException('Fayl topilmadi');
+    }
+
+    const activeSub = await this.prisma.userSubscription.findFirst({
+      where: { userId, status: 'active' },
+      include: { plan: true },
+    });
+
+    const isPremiumUser = activeSub?.plan.subscriptionType !== 'free';
+
+    if (file.movie.subscriptionType === 'premium' && !isPremiumUser) {
+      throw new BadRequestException(
+        `Bu faylni ko'rish uchun premium obuna kerak`,
+      );
+    }
+
+    return file;
   }
 
-  update(id: number, updateMovieFileDto: UpdateMovieFileDto) {
-    return;
+  async update(id: number, dto: UpdateMovieFileDto) {
+    const existingFile = await this.prisma.movieFile.findUnique({
+      where: { id },
+    });
+
+    if (!existingFile) {
+      throw new NotFoundException(`ID: ${id} bo'lgan fayl topilmadi`);
+    }
+
+    return await this.prisma.movieFile.update({
+      where: { id },
+      data: dto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} movieFile`;
+  async remove(id: number) {
+    const file = await this.prisma.movieFile.findUnique({
+      where: { id },
+    });
+
+    if (!file) {
+      throw new NotFoundException(`O'chirish uchun fayl topilmadi`);
+    }
+
+    const filePath = join(
+      process.cwd(),
+      'src',
+      'uploads',
+      'videos',
+      file.fileUrl,
+    );
+    if (existsSync(filePath)) {
+      unlinkSync(filePath);
+    }
+
+    await this.prisma.movieFile.delete({
+      where: { id },
+    });
+
+    return { success: true, message: `Fayl muvaffaqiyatli o'chirildi` };
   }
 }

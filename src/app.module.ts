@@ -16,6 +16,7 @@ import { ReviewModule } from './modules/review/review.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
+import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -41,7 +42,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MovieFileModule,
     FavoriteModule,
     ReviewModule,
-    // WatchHistoryModule,
+    WatchHistoryModule,
   ],
   controllers: [],
   providers: [],
