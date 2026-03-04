@@ -1,0 +1,16 @@
+scalar Upload
+
+type User {
+  id: ID!
+  name: String
+  age: Int
+  profileImage: String
+}
+
+type Query {
+  getUsers: [User!]!
+}
+
+type Mutation {
+  createUser(name: String!, password: String!, age: Int, file: Upload): User!
+}
