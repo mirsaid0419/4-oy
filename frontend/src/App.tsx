@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -43,6 +43,44 @@ const AdminRoute = ({ children, superOnly = false }: { children: React.ReactNode
 };
 
 const AppContent: React.FC = () => {
+  useEffect(() => {
+    // 1. Sichqonchaning o'ng tugmasini o'chirish
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+
+    // 2. Klaviatura tugmalarini (F12, Ctrl+Shift+I va h.k.) o'chirish
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U')
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    // 3. DevTools ochilganini aniqlash va cheklash (oddiy usul)
+    const detectDevTools = () => {
+      const start = new Date().getTime();
+      // debugger; // Bu DevTools ochilganda kodni to'xtatadi
+      const end = new Date().getTime();
+      if (end - start > 100) {
+        // console.clear();
+      }
+    };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    document.addEventListener('keydown', handleKeyDown);
+    const interval = setInterval(detectDevTools, 2000);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener('keydown', handleKeyDown);
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <div className="app">
       <Navbar />

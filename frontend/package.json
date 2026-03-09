@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.13.6",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^12.34.3",
     "lucide-react": "^0.576.0",
     "react": "^18.3.1",
@@ -19,6 +20,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^22.10.7",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
@@ -26,9 +29,9 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.12.0",
+    "rollup-plugin-javascript-obfuscator": "^1.0.4",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.15.0",
-    "@types/node": "^22.10.7",
     "vite": "^6.0.0"
   }
 }

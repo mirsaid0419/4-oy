@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { encryptData, decryptData } from '../utils/crypto';
 
 export const API_BASE_URL = 'https://kino-time.onrender.com';
 
@@ -6,13 +7,19 @@ const api = axios.create({
     baseURL: API_BASE_URL,
 });
 
-// Add a request interceptor to add the bearer token to every request
+// Add a request interceptor to add the bearer token and encrypt payload
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Agar ma'lumot fayl (FormData) yoki multipart bo'lmasa, shifrlaymiz
+        if (config.data && !(config.data instanceof FormData)) {
+            config.data = { encrypted: encryptData(config.data) };
+        }
+
         return config;
     },
     (error) => {
@@ -20,9 +27,16 @@ api.interceptors.request.use(
     }
 );
 
-// Add a response interceptor to handle unauthorized errors
+// Add a response interceptor to handle unauthorized errors and decrypt data
 api.interceptors.response.use(
     (response) => {
+        if (response.data && typeof response.data === 'string') {
+            const dec = decryptData(response.data);
+            // Agar result obyekt bo'lsa uni response.data ga yuklaymiz
+            if (dec && typeof dec === 'object') {
+                response.data = dec;
+            }
+        }
         return response;
     },
     (error) => {
