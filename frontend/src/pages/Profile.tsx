@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { encryptUrlId } from '../utils/crypto';
 import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../services/api';
 import { User, Mail, Shield, History, Heart, Settings, Play, Camera, X, CheckCircle } from 'lucide-react';
@@ -215,7 +216,7 @@ const Profile: React.FC = () => {
                           className="history-item"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          onClick={() => navigate(`/movie/${item.movieId}`)}
+                          onClick={() => navigate(`/movie/${encryptUrlId(item.movieId)}`)}
                         >
                           <div className="history-poster">
                             <img

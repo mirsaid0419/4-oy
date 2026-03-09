@@ -4,9 +4,11 @@ import api, { API_BASE_URL } from '../services/api';
 import { Star, Clock, Calendar, ChevronLeft, Heart, Share2, Play, VideoOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { decryptUrlId } from '../utils/crypto';
 
 const MovieDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: encryptedId } = useParams<{ id: string }>();
+  const id = encryptedId ? decryptUrlId(encryptedId) : '';
   const [movie, setMovie] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState<any[]>([]);

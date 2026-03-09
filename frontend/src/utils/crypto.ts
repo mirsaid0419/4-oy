@@ -35,3 +35,34 @@ export const decryptData = (ciphertext: string): any => {
         return ciphertext; // Agar shifrlanmagan bo'lsa o'zini qaytaradi
     }
 };
+
+/**
+ * URL uchun xavfsiz shifrlash (AES + base64 replacement)
+ */
+export const encryptUrlId = (id: string | number): string => {
+    try {
+        const encrypted = CryptoJS.AES.encrypt(id.toString(), SECRET_KEY).toString();
+        // URL uchun xavfli belgilarni almashtiramiz
+        return encrypted.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    } catch (error) {
+        return id.toString();
+    }
+};
+
+/**
+ * URL dan kelgan shifrlangan ID ni ochish
+ */
+export const decryptUrlId = (encryptedId: string): string => {
+    try {
+        // Almashtirilgan belgilarni qaytaramiz
+        let base64 = encryptedId.replace(/-/g, '+').replace(/_/g, '/');
+        // Padding qo'shamiz (agar kerak bo'lsa)
+        while (base64.length % 4 !== 0) base64 += '=';
+
+        const bytes = CryptoJS.AES.decrypt(base64, SECRET_KEY);
+        const originalId = bytes.toString(CryptoJS.enc.Utf8);
+        return originalId;
+    } catch (error) {
+        return encryptedId;
+    }
+};

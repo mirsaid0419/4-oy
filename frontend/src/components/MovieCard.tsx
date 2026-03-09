@@ -4,6 +4,7 @@ import { Play, Clock, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api, { API_BASE_URL } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { encryptUrlId } from '../utils/crypto';
 
 interface MovieCardProps {
   movie: {
@@ -64,7 +65,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       transition={{ duration: 0.3 }}
     >
       <div className="card-wrapper">
-        <Link to={`/movie/${movie.id}`}>
+        <Link to={`/movie/${encryptUrlId(movie.id)}`}>
           <div className="poster-wrapper">
             <img src={posterFullUrl} alt={movie.title} />
             <div className="overlay">
