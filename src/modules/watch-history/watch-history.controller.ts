@@ -14,7 +14,7 @@ import type { Request } from 'express';
 @ApiBearerAuth()
 @Controller('watch-history')
 export class WatchHistoryController {
-  constructor(private readonly watchHistoryService: WatchHistoryService) {}
+  constructor(private readonly watchHistoryService: WatchHistoryService) { }
   @ApiOperation({
     summary: `${Role.user} ${Role.admin} ${Role.superadmin}`,
   })
@@ -37,8 +37,8 @@ export class WatchHistoryController {
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.user, Role.admin, Role.superadmin)
   @Get()
-  findAll() {
-    return this.watchHistoryService.findAll();
+  findAll(@Req() req: Request) {
+    return this.watchHistoryService.findAll(Number(req['user']['id']));
   }
 
   @ApiOperation({
@@ -46,9 +46,15 @@ export class WatchHistoryController {
   })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.user, Role.admin, Role.superadmin)
-  @Get('one/:id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.watchHistoryService.findOne(id);
+  @Get('movie/:movieId')
+  findByMovie(
+    @Req() req: Request,
+    @Param('movieId', ParseIntPipe) movieId: number,
+  ) {
+    return this.watchHistoryService.findByMovie(
+      Number(req['user']['id']),
+      movieId,
+    );
   }
 
   @ApiOperation({

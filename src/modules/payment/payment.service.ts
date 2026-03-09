@@ -142,6 +142,7 @@ export class PaymentService {
       data: await this.prisma.payment.findMany({
         where: { subscription: { user: { id } } },
         select: {
+          id:true,
           subscription: {
             select: {
               id: true,

@@ -9,7 +9,7 @@ import {
   ArrayUnique,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { SubscriptionType } from '@prisma/client';
+import { SubscriptionType, VideoQuality } from '@prisma/client';
 
 export class CreateMovieDto {
   @IsString()
@@ -44,4 +44,12 @@ export class CreateMovieDto {
   @IsInt({ each: true })
   @ArrayUnique()
   categoryIds?: number[];
+
+  @IsOptional()
+  @IsEnum(VideoQuality)
+  quality?: VideoQuality;
+
+  @IsOptional()
+  @IsString()
+  language?: string;
 }

@@ -12,13 +12,20 @@ import { MovieCategoryModule } from './modules/movie-category/movie-category.mod
 import { MovieFileModule } from './modules/movie-file/movie-file.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { ReviewModule } from './modules/review/review.module';
-// import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WatchHistoryModule } from './modules/watch-history/watch-history.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -30,6 +37,7 @@ import { WatchHistoryModule } from './modules/watch-history/watch-history.module
     }),
     ScheduleModule.forRoot(),
     PrismaModule,
+    CloudinaryModule,
     AuthModule,
     ProfileModule,
     UsersModule,
@@ -47,4 +55,4 @@ import { WatchHistoryModule } from './modules/watch-history/watch-history.module
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

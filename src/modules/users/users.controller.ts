@@ -30,7 +30,7 @@ import { CreateAdminDto } from './dto/create-admin-dto';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin)
@@ -93,7 +93,7 @@ export class UsersController {
     summary: `${Role.superadmin},${Role.admin} and himself ${Role.user}`,
   })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin, Role.admin)
+  @Roles(Role.superadmin, Role.admin, Role.user)
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -109,12 +109,15 @@ export class UsersController {
         password: { type: 'string', example: '123456' },
         avatar: { type: 'string', format: 'binary' },
       },
-      required: ['username', 'email', 'password'],
     },
   })
   @Patch('user/:id')
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateUser(+id, updateUserDto);
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() avatar?: Express.Multer.File
+  ) {
+    return this.usersService.updateUser(+id, updateUserDto, avatar);
   }
 
   @ApiOperation({ summary: `${Role.superadmin}` })

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MovieFileService } from './movie-file.service';
 import { MovieFileController } from './movie-file.controller';
-import { PrismaService } from 'src/core/db/prisma/prisma.service';
 import { PrismaModule } from 'src/core/db/prisma/prisma.module';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   controllers: [MovieFileController],
   providers: [MovieFileService],
-  imports: [PrismaModule],
+  imports: [PrismaModule, CloudinaryModule],
 })
-export class MovieFileModule {}
+export class MovieFileModule { }

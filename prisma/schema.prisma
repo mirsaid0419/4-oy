@@ -67,6 +67,7 @@ model User {
   updated_at DateTime @updatedAt
 
   isDeleted Boolean @default(false)
+  isActive  Boolean @default(true)
 
   profile       Profile?
   movies        Movie[]
@@ -173,7 +174,8 @@ model Movie {
   description      String?
   releaseYear      Int
   durationMinutes  Int
-  posterUrl        String?          @db.VarChar(255)
+  posterUrl        String?          @db.VarChar(500) // Cloudinary URL yoki local path
+  posterPublicId   String?          @db.VarChar(255) // Cloudinary public_id (delete uchun)
   rating           Decimal?         @db.Decimal(3, 1)
   subscriptionType SubscriptionType @default(free)
   viewCount        Int              @default(0)
@@ -210,11 +212,12 @@ model MovieCategory {
 ////////////////////
 
 model MovieFile {
-  id       Int          @id @default(autoincrement())
-  movieId  Int
-  fileUrl  String       @db.VarChar(255)
-  quality  VideoQuality
-  language String       @default("uz") @db.VarChar(20)
+  id            Int          @id @default(autoincrement())
+  movieId       Int
+  fileUrl       String       @db.VarChar(500)
+  filePublicId  String?      @db.VarChar(255)
+  quality       VideoQuality
+  language      String       @default("uz") @db.VarChar(20)
 
   movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 

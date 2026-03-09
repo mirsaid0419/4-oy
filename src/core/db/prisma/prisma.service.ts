@@ -29,3 +29,4 @@ export class PrismaService
     Logger.log('Prisma is disconnected ❌');
   }
 }
+ 

@@ -6,9 +6,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class ReviewService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleRatingUpdate() {
     const grouped = await this.prisma.review.groupBy({
       by: ['movieId'],
@@ -28,40 +28,103 @@ export class ReviewService {
   }
 
   async create(createReviewDto: CreateReviewDto, userId: number) {
+    const { movieId, rating, comment } = createReviewDto;
+
     const movieExists = await this.prisma.movie.findUnique({
-      where: { id: createReviewDto.movieId },
+      where: { id: movieId },
     });
+
     if (!movieExists) {
-      throw new NotFoundException(
-        `ID-si ${createReviewDto.movieId} bo'lgan kino topilmadi!`,
-      );
+      throw new NotFoundException(`Kino topilmadi!`);
     }
-    return await this.prisma.review.create({
-      data: {
-        userId: userId,
-        movieId: createReviewDto.movieId,
-        rating: createReviewDto.rating,
-        comment: createReviewDto.comment,
+
+    // Upsert review: one per user per movie
+    const review = await this.prisma.review.upsert({
+      where: {
+        userId_movieId: {
+          userId,
+          movieId
+        }
       },
+      update: {
+        rating,
+        comment
+      },
+      create: {
+        userId,
+        movieId,
+        rating,
+        comment
+      }
+    });
+
+    // Manually trigger rating update for this movie for immediate feedback (optional)
+    await this.updateMovieRating(movieId);
+
+    return {
+      success: true,
+      data: review
+    };
+  }
+
+  async updateMovieRating(movieId: number) {
+    const stats = await this.prisma.review.aggregate({
+      where: { movieId },
+      _avg: { rating: true }
+    });
+
+    await this.prisma.movie.update({
+      where: { id: movieId },
+      data: { rating: stats._avg.rating ?? 0 }
     });
   }
 
   async findAll() {
-    return await this.prisma.review.findMany();
+    const data = await this.prisma.review.findMany({
+      include: {
+        user: { select: { username: true, avatarUrl: true } },
+        movie: { select: { title: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    return { success: true, data };
+  }
+
+  async findByMovieId(movieId: number) {
+    const data = await this.prisma.review.findMany({
+      where: { movieId },
+      include: {
+        user: { select: { username: true, avatarUrl: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    return { success: true, data };
   }
 
   async findOne(id: number) {
-    return await this.prisma.review.findUnique({ where: { id } });
+    const data = await this.prisma.review.findUnique({
+      where: { id },
+      include: { user: true, movie: true }
+    });
+    if (!data) throw new NotFoundException('Topilmadi');
+    return { success: true, data };
   }
 
   async update(id: number, updateReviewDto: UpdateReviewDto) {
-    return await this.prisma.review.update({
+    const data = await this.prisma.review.update({
       where: { id },
       data: updateReviewDto,
     });
+    return { success: true, data };
   }
 
   async remove(id: number) {
-    return await this.prisma.review.delete({ where: { id } });
+    const review = await this.prisma.review.findUnique({ where: { id } });
+    if (!review) throw new NotFoundException('Topilmadi');
+
+    await this.prisma.review.delete({ where: { id } });
+    await this.updateMovieRating(review.movieId);
+
+    return { success: true, message: 'O\'chirildi' };
   }
 }

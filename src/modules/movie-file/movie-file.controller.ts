@@ -61,10 +61,14 @@ export class MovieFileController {
   ) {
     return this.movieFileService.create(createUserDto, file);
   }
-
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.superadmin, Role.admin, Role.user)
   @Get()
-  findAll() {
-    return this.movieFileService.findAll();
+  findAll(
+    @Req() req:Request
+  ) {
+    return this.movieFileService.findAll(req["user"]["id"]);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })

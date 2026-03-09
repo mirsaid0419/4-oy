@@ -18,6 +18,15 @@ export class SubscriptionPlanService {
     };
   }
 
+  async findAll() {
+    return {
+      success: true,
+      data: await this.prisma.subscriptionPlan.findMany({
+        orderBy: { id: 'asc' },
+      }),
+    };
+  }
+
   async findAllActive() {
     return {
       success: true,
@@ -54,7 +63,7 @@ export class SubscriptionPlanService {
     if (!data) throw new NotFoundException('Plan not found');
 
     if (updateSubscriptionPlanDto.name) {
-      updateSubscriptionPlanDto.name=updateSubscriptionPlanDto.name.trim().toLocaleLowerCase();
+      updateSubscriptionPlanDto.name = updateSubscriptionPlanDto.name.trim().toLocaleLowerCase();
     }
     return {
       success: true,

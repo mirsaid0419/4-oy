@@ -23,19 +23,27 @@ import { Roles } from 'src/common/decorators/role';
 export class SubscriptionPlanController {
   constructor(
     private readonly subscriptionPlanService: SubscriptionPlanService,
-  ) {}
+  ) { }
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin)
+  @Roles(Role.superadmin, Role.admin)
   @Post()
   create(@Body() createSubscriptionPlanDto: CreateSubscriptionPlanDto) {
     return this.subscriptionPlanService.create(createSubscriptionPlanDto);
   }
 
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.admin, Role.superadmin)
+  @Get()
+  findAll() {
+    return this.subscriptionPlanService.findAll();
+  }
+
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.admin, Role.superadmin,Role.user)
+  @Roles(Role.admin, Role.superadmin, Role.user)
   @Get("active")
   findAllActive() {
     return this.subscriptionPlanService.findAllActive();
@@ -57,9 +65,9 @@ export class SubscriptionPlanController {
     return this.subscriptionPlanService.findOne(+id);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin)
+  @Roles(Role.superadmin, Role.admin)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -68,9 +76,9 @@ export class SubscriptionPlanController {
     return this.subscriptionPlanService.update(+id, updateSubscriptionPlanDto);
   }
 
-  @ApiOperation({ summary: `${Role.superadmin}` })
+  @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.superadmin)
+  @Roles(Role.superadmin, Role.admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.subscriptionPlanService.remove(+id);

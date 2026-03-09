@@ -6,31 +6,40 @@ import {
 } from '@nestjs/common';
 import { CreateMovieFileDto } from './dto/create-movie-file.dto';
 import { UpdateMovieFileDto } from './dto/update-movie-file.dto';
-import { extname, join } from 'path';
-import {
-  createReadStream,
-  existsSync,
-  mkdirSync,
-  statSync,
-  unlinkSync,
-  writeFileSync,
-} from 'fs';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import axios from 'axios';
 
 @Injectable()
 export class MovieFileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) { }
+
   async create(
     createMovieFileDto: CreateMovieFileDto,
     file: Express.Multer.File,
   ) {
     const language = createMovieFileDto.language?.trim().toLowerCase();
-    const file_name = Date.now() + '_video_' + extname(file.originalname);
-    const uploadPath = join(process.cwd(), 'src', 'uploads', 'videos');
-    mkdirSync(uploadPath, { recursive: true });
-    writeFileSync(join(uploadPath, file_name), file.buffer);
+
+    let fileUrl: string;
+    let filePublicId: string;
+    try {
+      const uploadResult = (await this.cloudinaryService.uploadFile(
+        file,
+        'imtixon/movies/videos',
+      )) as { url: string; publicId: string };
+      fileUrl = uploadResult.url;
+      filePublicId = uploadResult.publicId;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Cloudinary upload failed: ${error.message}`,
+      );
+    }
+
     try {
       const result = await this.prisma.$transaction(async (prisma) => {
         const movie = await prisma.movie.findUnique({
@@ -40,10 +49,11 @@ export class MovieFileService {
         if (!movie) {
           throw new NotFoundException('Movie not found');
         }
-        const movieFile = await prisma.movieFile.create({
+        const movieFile = await (prisma.movieFile as any).create({
           data: {
             movieId: +createMovieFileDto.movieId,
-            fileUrl: file_name,
+            fileUrl,
+            filePublicId,
             quality: createMovieFileDto.quality,
             language: language,
           },
@@ -69,8 +79,38 @@ export class MovieFileService {
     }
   }
 
-  async findAll() {
-    return { success: true, data: await this.prisma.movieFile.findMany() };
+  async findAll(userId: number) {
+    const activeSubscription = await this.prisma.userSubscription.findFirst({
+      where: {
+        userId: userId,
+        status: 'active',
+        plan: {
+          subscriptionType: { not: 'free' },
+        },
+      },
+    });
+    const hasPremium = !!activeSubscription;
+
+    let whereCondition: any = {};
+    if (!hasPremium) {
+      whereCondition.subscriptionType = 'free';
+    }
+    const [movies, total] = await this.prisma.$transaction([
+      this.prisma.movie.findMany({
+        where: whereCondition,
+        include: {
+          files: true,
+          categories: { include: { category: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.movie.count({ where: whereCondition }),
+    ]);
+
+    return {
+      success: true,
+      data: movies,
+    };
   }
 
   async watchFile(
@@ -112,40 +152,57 @@ export class MovieFileService {
         data: { viewCount: { increment: 1 } },
       });
 
-      const videoPath = join(
-        process.cwd(),
-        'src',
-        'uploads',
-        'videos',
-        `${data.fileUrl}`,
-      );
+      const cloudinaryUrl = data.fileUrl;
 
-      const videoStat = statSync(videoPath);
-      const fileSize = videoStat.size;
+      if (!cloudinaryUrl || !cloudinaryUrl.startsWith('http')) {
+        throw new NotFoundException('Video fayli Cloudinaryda topilmadi');
+      }
 
-      if (range) {
+      let fileSize: number;
+      try {
+        const headResponse = await axios.head(cloudinaryUrl);
+        fileSize = parseInt(headResponse.headers['content-length'] || '0', 10);
+      } catch {
+        fileSize = 0;
+      }
+
+      if (range && fileSize > 0) {
         const parts = range.replace(/bytes=/, '').split('-');
         const start = parseInt(parts[0], 10);
         const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
+        if (start >= fileSize) {
+          res.status(416).send('Requested range not satisfiable');
+          return;
+        }
+
         const chunkSize = end - start + 1;
-        const file = createReadStream(videoPath, { start, end });
+
+        const axiosResponse = await axios.get(cloudinaryUrl, {
+          responseType: 'stream',
+          headers: { Range: `bytes=${start}-${end}` },
+        });
 
         res.writeHead(206, {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunkSize,
           'Content-Type': 'video/mp4',
+          'Cache-Control': 'no-cache',
         });
 
-        file.pipe(res);
+        axiosResponse.data.pipe(res);
       } else {
-        res.writeHead(200, {
-          'Content-Length': fileSize,
-          'Content-Type': 'video/mp4',
+        const axiosResponse = await axios.get(cloudinaryUrl, {
+          responseType: 'stream',
         });
 
-        createReadStream(videoPath).pipe(res);
+        res.writeHead(200, {
+          'Content-Type': 'video/mp4',
+          ...(fileSize > 0 ? { 'Content-Length': fileSize } : {}),
+        });
+
+        axiosResponse.data.pipe(res);
       }
     } catch (error) {
       if (
@@ -185,7 +242,7 @@ export class MovieFileService {
   }
 
   async update(id: number, dto: UpdateMovieFileDto) {
-    const existingFile = await this.prisma.movieFile.findUnique({
+    const existingFile = await (this.prisma.movieFile as any).findUnique({
       where: { id },
     });
 
@@ -193,14 +250,14 @@ export class MovieFileService {
       throw new NotFoundException(`ID: ${id} bo'lgan fayl topilmadi`);
     }
 
-    return await this.prisma.movieFile.update({
+    return await (this.prisma.movieFile as any).update({
       where: { id },
       data: dto,
     });
   }
 
   async remove(id: number) {
-    const file = await this.prisma.movieFile.findUnique({
+    const file = await (this.prisma.movieFile as any).findUnique({
       where: { id },
     });
 
@@ -208,15 +265,8 @@ export class MovieFileService {
       throw new NotFoundException(`O'chirish uchun fayl topilmadi`);
     }
 
-    const filePath = join(
-      process.cwd(),
-      'src',
-      'uploads',
-      'videos',
-      file.fileUrl,
-    );
-    if (existsSync(filePath)) {
-      unlinkSync(filePath);
+    if (file.filePublicId) {
+      await this.cloudinaryService.deleteFile(file.filePublicId, 'video');
     }
 
     await this.prisma.movieFile.delete({

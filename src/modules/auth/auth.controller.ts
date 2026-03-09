@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -74,7 +76,7 @@ export class AuthController {
       required: ['username', 'email', 'password', 'avatar'],
     },
   })
-  
+
   @Post('admin/register')
   adminRegister(
     @Body() createAdminDto: CreateAdminDto,
@@ -82,10 +84,21 @@ export class AuthController {
   ) {
     return this.authService.adminRegister(createAdminDto, avatar);
   }
-
+ 
   @ApiConsumes('application/x-www-form-urlencoded') //swaggerdan json malumotlarni form data ko'rinishida kiritish kodi
   @Post('login')
   login(@Body() payload: UserLoginDto) {
     return this.authService.login(payload);
+  }
+
+  @ApiOperation({ summary: 'Verify current session' })
+  @UseGuards(TokenGuard)
+  @Get('me')
+  async getMe(@Req() req: any) {
+    const user = await this.authService.getMe(req.user.id);
+    return {
+      success: true,
+      user
+    };
   }
 }

@@ -16,7 +16,7 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly userSubscriptionService: UserSubscriptionService,
-  ) {}
+  ) { }
   async create(createUserDto: CreateAdminDto, avatar: Express.Multer.File) {
     return this.prisma.$transaction(async (prisma) => {
       const existUser = await prisma.user.findFirst({
@@ -44,9 +44,22 @@ export class UsersService {
         data: {
           ...createUserDto,
           password: await bcrypt.hash(createUserDto.password, 10),
+          profile: {
+            create: {} // This creates an empty profile record automatically
+          }
         },
-        select: { id: true, username: true, role: true, createdAt: true }
+        include: {
+          profile: true,
+          subscriptions: { include: { plan: true } }
+        }
       });
+
+      const { password, ...userWithoutPassword } = data;
+      return {
+        success: true,
+        message: 'Account success created',
+        user: userWithoutPassword
+      };
 
 
       // await prisma.userSubscription.create({
@@ -56,7 +69,7 @@ export class UsersService {
       //     status: SubscriptionStatus.active,
       //     autoRenew: false,
       //     startDate: new Date(),
-        // },
+      // },
       // });
       return {
         success: true,
@@ -83,21 +96,65 @@ export class UsersService {
   }
 
   async findOne(id: number) {
+    if (isNaN(id)) {
+      throw new BadRequestException('Invalid user ID');
+    }
     return {
       success: true,
       data: await this.prisma.user.findFirst({ where: { id } }),
     };
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  async updateUser(id: number, updateUserDto: UpdateUserDto, avatar?: Express.Multer.File) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new BadRequestException('User not found');
+
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
+
+    if (avatar) {
+      if (user.avatarUrl) {
+        const oldAvatarPath = join(process.cwd(), 'src', 'uploads', user.avatarUrl);
+        const { existsSync, unlinkSync } = require('fs');
+        if (existsSync(oldAvatarPath)) unlinkSync(oldAvatarPath);
+      }
+
+      const fileName = `${Date.now()}_avatar${extname(avatar.originalname)}`;
+      const uploadPath = join(process.cwd(), 'src', 'uploads');
+      mkdirSync(uploadPath, { recursive: true });
+      writeFileSync(join(uploadPath, fileName), avatar.buffer);
+      updateUserDto.avatarUrl = fileName;
+    }
+
+    const { fullName, phone, country, ...userData } = updateUserDto;
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: userData as any,
+      include: { profile: true },
+    });
+
+    if (fullName || phone || country) {
+      await this.prisma.profile.upsert({
+        where: { userId: id },
+        update: { fullName, phone, country },
+        create: { userId: id, fullName, phone, country },
+      });
+    }
+
+    const finalUser = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true, username: true, email: true, role: true, avatarUrl: true, createdAt: true,
+        profile: { select: { fullName: true, phone: true, country: true } }
+      },
+    });
+
     return {
       success: true,
-      message: 'User data success updated',
-      newUserData: await this.prisma.user.update({
-        where: { id },
-        data: updateUserDto,
-        select: { username: true, role: true, avatarUrl: true },
-      }),
+      message: 'Profile updated successfully',
+      data: finalUser,
     };
   }
 
@@ -113,7 +170,10 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    await this.prisma.user.update({ where: { id }, data: { isDeleted: true } });
-    return { success: true, message: 'user success deleted' };
+    await this.prisma.user.update({
+      where: { id },
+      data: { role: Role.user, isActive: true },
+    });
+    return { success: true, message: 'Admin muvaffaqiyatli foydalanuvchiga aylantirildi' };
   }
 }

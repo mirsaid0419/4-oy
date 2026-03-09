@@ -16,19 +16,26 @@ export class FavoriteController {
 
   @ApiOperation({ summary: `${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.user)
-  @Post()
-  create(@Body() createFavoriteDto: CreateFavoriteDto,
-    @Req() req: Request) {
-    return this.favoriteService.create(createFavoriteDto, req["user"]["id"]);
+  @Roles(Role.user, Role.admin, Role.superadmin)
+  @Post('toggle')
+  create(@Body() createFavoriteDto: CreateFavoriteDto, @Req() req: any) {
+    return this.favoriteService.toggle(createFavoriteDto, req.user.id);
   }
 
   @ApiOperation({ summary: `${Role.user}` })
   @UseGuards(TokenGuard, RoleGuard)
-  @Roles(Role.user)
-  @Get("my/all")
-  findAll(@Req() req: Request) {
-    return this.favoriteService.findAll(req["user"]);
+  @Roles(Role.user, Role.admin, Role.superadmin)
+  @Get('my/all')
+  findAll(@Req() req: any) {
+    return this.favoriteService.findAll(req.user.id);
+  }
+
+  @ApiOperation({ summary: `${Role.user}` })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.user, Role.admin, Role.superadmin)
+  @Get('check/:movieId')
+  check(@Param('movieId') movieId: string, @Req() req: any) {
+    return this.favoriteService.checkFavorite(+movieId, req.user.id);
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })

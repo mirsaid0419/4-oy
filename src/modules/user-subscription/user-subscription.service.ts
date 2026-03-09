@@ -15,7 +15,7 @@ export class UserSubscriptionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly paymentService: PaymentService,
-  ) {}
+  ) { }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async handleExpiredSubscriptions() {
@@ -85,7 +85,7 @@ export class UserSubscriptionService {
         autoRenew: createUserSubscriptionDto.autoRenew ?? false,
       },
     });
-    await this.paymentService.create(data.id);
+    // await this.paymentService.create(data.id);
     return { success: true, data };
   }
 
@@ -107,12 +107,15 @@ export class UserSubscriptionService {
   }
 
   async findOneSubscriptionsMe(id: number) {
+    const subscription = await this.prisma.userSubscription.findFirst({
+      where: { userId: id, status: SubscriptionStatus.active },
+      include: { plan: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
     return {
       success: true,
-      data: await this.prisma.userSubscription.findMany({
-        where: { userId: id },
-        // include: { plan: true },
-      }),
+      data: subscription,
     };
   }
 

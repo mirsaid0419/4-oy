@@ -1,0 +1,44 @@
+{
+  "info": {
+    "_postman_id": "1c8f470f-1c63-4e90-bea2-5058d65ee6ec",
+    "name": "New Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Redis",
+      "item": [
+        {
+          "name": "New Request",
+          "id": "f372b91a-cac9-4e93-aaff-006bcbdcc6fa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "4954ea4b-ed81-46f4-a4c3-d81536709361"
+    },
+    {
+      "name": "New Folder",
+      "item": [],
+      "id": "ee819191-978e-47f6-b794-526b525a6bde"
+    },
+    {
+      "name": "New Request",
+      "id": "30609554-a153-4b28-927b-dae064d48857",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ]
+}

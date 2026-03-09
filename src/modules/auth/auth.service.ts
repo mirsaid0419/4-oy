@@ -6,6 +6,7 @@ import { CreateAdminDto } from '../users/dto/create-admin-dto';
 import { UserLoginDto } from './dto/user-login-dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,6 +14,7 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly jwt: JwtService,
   ) { }
+
   async userRegister(payload: CreateUserDto, avatar: Express.Multer.File) {
     return await this.userService.create(payload, avatar);
   }
@@ -27,9 +29,17 @@ export class AuthService {
       select: {
         id: true,
         username: true,
+        email: true,
         role: true,
         avatarUrl: true,
         password: true,
+        profile: {
+          select: {
+            fullName: true,
+            phone: true,
+            country: true
+          }
+        },
         subscriptions: {
           select: { plan: { select: { name: true } }, endDate: true },
         },
@@ -41,10 +51,40 @@ export class AuthService {
         const { password, ...user } = data;
         return {
           success: true,
-          data: await this.jwt.signAsync(user),
+          access_token: await this.jwt.signAsync(user),
+          user: user
         };
       }
     }
     throw new BadRequestException('User name or password error ');
+  }
+
+  async getMe(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        profile: {
+          select: {
+            fullName: true,
+            phone: true,
+            country: true
+          }
+        },
+        subscriptions: {
+          select: {
+            plan: { select: { name: true } },
+            endDate: true
+          }
+        }
+      }
+    });
+
+    if (!user) throw new BadRequestException('User not found');
+    return user;
   }
 }

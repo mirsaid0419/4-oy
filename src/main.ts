@@ -12,6 +12,7 @@ async function bootstrap() {
       // forbidNonWhitelisted: true,
     }),
   );
+  app.enableCors();
   const config = new DocumentBuilder()
     .setTitle('Kino time swagger API')
     .setDescription(`Kino time sayti uchun backend tizimi API hujjatlari`)
@@ -23,7 +24,7 @@ async function bootstrap() {
       name: 'JWT',
       description: 'Tokenni kiriting',
       in: 'header',
-    }) 
+    })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger/api', app, documentFactory, {
@@ -31,7 +32,7 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   });
-
+ 
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

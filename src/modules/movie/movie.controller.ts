@@ -9,6 +9,7 @@ import {
   BadRequestException,
   Req,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
   UseGuards,
   Query,
@@ -26,10 +27,11 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { TokenGuard } from 'src/common/guards/token.guard';
-import { Role } from '@prisma/client';
+import { Role, VideoQuality } from '@prisma/client';
+import express from 'express';
 import { Roles } from 'src/common/decorators/role';
 import { PaginationDto } from './dto/paganation-movie.dto';
 
@@ -61,20 +63,40 @@ export class MovieController {
           type: 'string',
           format: 'binary',
         },
+        video: {
+          type: 'string',
+          format: 'binary',
+        },
+        quality: {
+          type: 'string',
+          enum: Object.values(VideoQuality),
+        },
+        language: { type: 'string' },
       },
       required: ['title', 'releaseYear', 'durationMinutes'],
     },
   })
-  @UseInterceptors(FileInterceptor('poster'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'poster', maxCount: 1 },
+      { name: 'video', maxCount: 1 },
+    ]),
+  )
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin}` })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin)
   async create(
     @Body() createMovieDto: CreateMovieDto,
-    @UploadedFile() poster: Express.Multer.File,
+    @UploadedFiles()
+    files: { poster?: Express.Multer.File[]; video?: Express.Multer.File[] },
     @Req() req: any,
   ) {
-    return this.movieService.create(createMovieDto, poster, req.user.id);
+    return this.movieService.create(
+      createMovieDto,
+      files.poster?.[0],
+      files.video?.[0],
+      req.user.id,
+    );
   }
 
   @ApiOperation({ summary: `${Role.superadmin},${Role.admin},${Role.user}` })
@@ -129,7 +151,7 @@ export class MovieController {
   @UseInterceptors(FileInterceptor('poster'))
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() req: Request,
+    @Req() req: express.Request,
     @UploadedFile() poster: Express.Multer.File,
     @Body() updateMovieDto: UpdateMovieDto,
   ) {

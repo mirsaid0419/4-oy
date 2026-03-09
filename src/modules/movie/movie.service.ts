@@ -8,23 +8,23 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PrismaService } from 'src/core/db/prisma/prisma.service';
 import slugify from 'slugify';
-import { mkdirSync, writeFileSync } from 'fs';
-import { extname, join } from 'path';
 import { PaginationDto } from './dto/paganation-movie.dto';
-import { unlinkSync, existsSync } from 'fs';
 import { MovieCategoryService } from '../movie-category/movie-category.service';
-import { Role, SubscriptionType } from '@prisma/client';
+import { Role, SubscriptionType, VideoQuality } from '@prisma/client';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class MovieService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly movieCategory: MovieCategoryService,
+    private readonly cloudinaryService: CloudinaryService,
   ) { }
 
   async create(
     createMovieDto: CreateMovieDto,
     poster?: Express.Multer.File,
+    video?: Express.Multer.File,
     userId?: number,
   ) {
     if (
@@ -36,6 +36,17 @@ export class MovieService {
         'Title, releaseYear, and durationMinutes are required',
       );
     }
+
+    if (!userId) {
+      throw new BadRequestException('User ID is required to create a movie');
+    }
+
+    const slug = slugify(createMovieDto.title, { lower: true, strict: true });
+    const existing = await this.prisma.movie.findFirst({ where: { slug } });
+    if (existing) {
+      throw new BadRequestException('Movie with this title already exists');
+    }
+
     let categoriesConnect: { categoryId: number }[] = [];
     if (createMovieDto.categoryIds?.length) {
       const categories = await this.prisma.category.findMany({
@@ -51,41 +62,68 @@ export class MovieService {
       }));
     }
 
+    // Upload poster to Cloudinary
     let posterUrl: string | null = null;
+    let posterPublicId: string | null = null;
+
     if (poster) {
-      const fileName = `${Date.now()}_poster_${extname(poster.originalname)}`;
-      const uploadPath = join(process.cwd(), 'src', 'uploads', 'movies');
-      mkdirSync(uploadPath, { recursive: true });
-      writeFileSync(join(uploadPath, fileName), poster.buffer);
-      posterUrl = fileName;
+      const uploadResult = (await this.cloudinaryService.uploadFile(
+        poster,
+        'imtixon/movies/posters',
+      )) as { url: string; publicId: string };
+      posterUrl = uploadResult.url;
+      posterPublicId = uploadResult.publicId;
     }
 
-    const slug = slugify(createMovieDto.title, { lower: true, strict: true });
+    // Upload video to Cloudinary if provided
+    let videoUrl: string | null = null;
+    let videoPublicId: string | null = null;
 
-    const movie = await this.prisma.movie.create({
-      data: {
-        title: createMovieDto.title,
-        slug,
-        description: createMovieDto.description,
-        releaseYear: createMovieDto.releaseYear,
-        durationMinutes: createMovieDto.durationMinutes,
-        posterUrl,
-        subscriptionType: createMovieDto.subscriptionType || 'free',
-        createdBy: userId || 0,
-        categories: categoriesConnect.length
-          ? { create: categoriesConnect }
-          : undefined,
-      },
-      include: {
-        categories: true,
-      },
+    if (video) {
+      const uploadVideoResult = (await this.cloudinaryService.uploadFile(
+        video,
+        'imtixon/movies/videos',
+      )) as { url: string; publicId: string };
+      videoUrl = uploadVideoResult.url;
+      videoPublicId = uploadVideoResult.publicId;
+    }
+
+    const movie = await this.prisma.$transaction(async (prisma) => {
+      const newMovie = await (prisma.movie as any).create({
+        data: {
+          title: createMovieDto.title,
+          slug,
+          description: createMovieDto.description,
+          releaseYear: createMovieDto.releaseYear,
+          durationMinutes: createMovieDto.durationMinutes,
+          posterUrl,
+          posterPublicId,
+          subscriptionType: createMovieDto.subscriptionType || 'free',
+          createdBy: userId,
+          categories: categoriesConnect.length
+            ? { create: categoriesConnect }
+            : undefined,
+        },
+        include: {
+          categories: true,
+        },
+      });
+
+      if (videoUrl && createMovieDto.quality) {
+        await (prisma.movieFile as any).create({
+          data: {
+            movieId: newMovie.id,
+            fileUrl: videoUrl,
+            filePublicId: videoPublicId,
+            quality: createMovieDto.quality,
+            language: createMovieDto.language || 'uz',
+          },
+        });
+      }
+
+      return newMovie;
     });
-    // if (createMovieDto.categoryIds){
-    //   await this.movieCategory.create({
-    //     movieId: movie.id,
-    //     categoryIds: createMovieDto.categoryIds,
-    //   });
-    // }
+
     return { success: true, data: movie };
   }
 
@@ -214,7 +252,7 @@ export class MovieService {
       throw new BadRequestException('Invalid movie id');
     }
 
-    const movie = await this.prisma.movie.findUnique({
+    const movie = await (this.prisma.movie as any).findUnique({
       where: { id },
       include: { categories: true },
     });
@@ -262,32 +300,22 @@ export class MovieService {
     }
 
     let posterUrl = movie.posterUrl;
+    let posterPublicId = movie.posterPublicId;
 
     if (poster) {
-      if (movie.posterUrl) {
-        const oldPath = join(
-          process.cwd(),
-          'src',
-          'uploads',
-          'movies',
-          movie.posterUrl,
-        );
-
-        if (existsSync(oldPath)) {
-          unlinkSync(oldPath);
-        }
+      if (movie.posterPublicId) {
+        await this.cloudinaryService.deleteFile(movie.posterPublicId);
       }
 
-      const fileName = `${Date.now()}_poster_${extname(poster.originalname)}`;
-
-      const uploadPath = join(process.cwd(), 'src', 'uploads', 'movies');
-      mkdirSync(uploadPath, { recursive: true });
-      writeFileSync(join(uploadPath, fileName), poster.buffer);
-
-      posterUrl = fileName;
+      const uploadResult = (await this.cloudinaryService.uploadFile(
+        poster,
+        'imtixon/movies/posters',
+      )) as { url: string; publicId: string };
+      posterUrl = uploadResult.url;
+      posterPublicId = uploadResult.publicId;
     }
 
-    const updatedMovie = await this.prisma.movie.update({
+    const updatedMovie = await (this.prisma.movie as any).update({
       where: { id },
       data: {
         title: updateMovieDto.title ?? undefined,
@@ -297,6 +325,7 @@ export class MovieService {
         durationMinutes: updateMovieDto.durationMinutes ?? undefined,
         subscriptionType: updateMovieDto.subscriptionType ?? undefined,
         posterUrl,
+        posterPublicId,
         categories: categoriesUpdate,
       },
       include: {
@@ -317,7 +346,7 @@ export class MovieService {
       throw new BadRequestException('Invalid movie id');
     }
 
-    const movie = await this.prisma.movie.findUnique({
+    const movie = await (this.prisma.movie as any).findUnique({
       where: { id },
       include: {
         files: true,
@@ -326,6 +355,19 @@ export class MovieService {
 
     if (!movie) {
       throw new NotFoundException('Movie not found');
+    }
+
+    for (const file of movie.files) {
+      if (file.fileUrl && file.fileUrl.startsWith('http')) {
+        const publicId = (file as any).filePublicId;
+        if (publicId) {
+          await this.cloudinaryService.deleteFile(publicId, 'video');
+        }
+      }
+    }
+
+    if (movie.posterPublicId) {
+      await this.cloudinaryService.deleteFile(movie.posterPublicId);
     }
 
     await this.prisma.$transaction(async (prisma) => {
@@ -341,35 +383,6 @@ export class MovieService {
         where: { id },
       });
     });
-
-    if (movie.posterUrl) {
-      const posterPath = join(
-        process.cwd(),
-        'src',
-        'uploads',
-        'movies',
-        movie.posterUrl,
-      );
-
-      if (existsSync(posterPath)) {
-        unlinkSync(posterPath);
-      }
-    }
-
-    for (const file of movie.files) {
-      const videoPath = join(
-        process.cwd(),
-        'src',
-        'uploads',
-        'movies',
-        'videos',
-        file.fileUrl,
-      );
-
-      if (existsSync(videoPath)) {
-        unlinkSync(videoPath);
-      }
-    }
 
     return {
       success: true,
