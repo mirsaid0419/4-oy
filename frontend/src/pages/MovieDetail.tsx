@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { API_BASE_URL } from '../services/api';
 import { Star, Clock, Calendar, ChevronLeft, Heart, Share2, Play, VideoOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -188,7 +188,7 @@ const MovieDetail: React.FC = () => {
   }, []);
 
   const posterFullUrl = movie?.posterUrl
-    ? (movie.posterUrl.startsWith('http') ? movie.posterUrl : `http://localhost:2003/uploads/movies/${movie.posterUrl}`)
+    ? (movie.posterUrl.startsWith('http') ? movie.posterUrl : `${API_BASE_URL}/uploads/movies/${movie.posterUrl}`)
     : 'https://via.placeholder.com/800x1200';
 
   if (loading) return <div className="loading">Loading movie details...</div>;
@@ -286,7 +286,7 @@ const MovieDetail: React.FC = () => {
                       controls
                       className="movie-video"
                       poster={posterFullUrl}
-                      src={`http://localhost:2003/movie-file/watch/${file.id}?token=${token}`}
+                      src={`${API_BASE_URL}/movie-file/watch/${file.id}?token=${token}`}
                       preload="metadata"
                       onPlay={onVideoPlay}
                       onPause={onVideoPause}
@@ -366,7 +366,7 @@ const MovieDetail: React.FC = () => {
                         <div className="user-avatar">
                           {review.user?.avatarUrl ? (
                             <img
-                              src={review.user.avatarUrl.startsWith('http') ? review.user.avatarUrl : `http://localhost:2003/uploads/${review.user.avatarUrl}`}
+                              src={review.user.avatarUrl.startsWith('http') ? review.user.avatarUrl : `${API_BASE_URL}/uploads/${review.user.avatarUrl}`}
                               alt={review.user.username}
                             />
                           ) : (

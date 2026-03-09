@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import api from '../../services/api';
+import api, { API_BASE_URL } from '../../services/api';
 import { Plus, Trash2, Film, Edit, Upload, X, Image, Loader2, Star, Video, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -493,7 +493,7 @@ const AdminMovies: React.FC = () => {
                         {movies.map(movie => (
                             <tr key={movie.id}>
                                 <td className="id-cell">#{movie.id}</td>
-                                <td><img src={movie.posterUrl ? movie.posterUrl : 'https://via.placeholder.com/50x70/1a1a2e/6366f1?text=🎬'} className="table-thumb" alt="" /></td>
+                                <td><img src={movie.posterUrl ? (movie.posterUrl.startsWith('http') ? movie.posterUrl : `${API_BASE_URL}/uploads/movies/${movie.posterUrl}`) : 'https://via.placeholder.com/50x70/1a1a2e/6366f1?text=🎬'} className="table-thumb" alt="" /></td>
                                 <td><div className="movie-title-text" title={movie.title}>{movie.title}</div></td>
                                 <td><div className="movie-description-text" title={movie.description}>{movie.description || 'Tavsif yo\'q'}</div></td>
                                 <td>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Play, Clock, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import api from '../services/api';
+import api, { API_BASE_URL } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 interface MovieCardProps {
@@ -22,7 +22,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const navigate = useNavigate();
 
   const posterFullUrl = movie.posterUrl
-    ? (movie.posterUrl.startsWith('http') ? movie.posterUrl : `http://localhost:2003/uploads/movies/${movie.posterUrl}`)
+    ? (movie.posterUrl.startsWith('http') ? movie.posterUrl : `${API_BASE_URL}/uploads/movies/${movie.posterUrl}`)
     : 'https://via.placeholder.com/300x450';
 
   useEffect(() => {

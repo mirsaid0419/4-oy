@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://kino-time.onrender.com';
+export const API_BASE_URL = 'https://kino-time.onrender.com';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
