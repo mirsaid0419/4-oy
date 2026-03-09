@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Play, User, LogOut } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -24,6 +25,7 @@ const Navbar: React.FC = () => {
               <Link to="/admin/movies" className="nav-link admin-link">Manage Movies</Link>
               <Link to="/admin/categories" className="nav-link admin-link">Manage Categories</Link>
               <Link to="/admin/subscriptions" className="nav-link admin-link">Manage Plans</Link>
+              <Link to="/admin/users" className="nav-link admin-link">Manage Users</Link>
               {user.role === 'superadmin' && (
                 <Link to="/admin/admins" className="nav-link admin-link">Manage Admins</Link>
               )}
@@ -37,7 +39,7 @@ const Navbar: React.FC = () => {
               <Link to="/profile" className="profile-btn">
                 {user.avatarUrl ? (
                   <img
-                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:2003/uploads/${user.avatarUrl}`}
+                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}/uploads/${user.avatarUrl}`}
                     alt={user.username}
                     className="avatar-small"
                   />

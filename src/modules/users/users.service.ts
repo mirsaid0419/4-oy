@@ -169,11 +169,36 @@ export class UsersService {
     };
   }
 
-  async remove(id: number) {
+  async demoteAdmin(id: number) {
     await this.prisma.user.update({
       where: { id },
-      data: { role: Role.user, isActive: true },
+      data: { role: Role.user },
     });
     return { success: true, message: 'Admin muvaffaqiyatli foydalanuvchiga aylantirildi' };
+  }
+
+  async toggleStatus(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new BadRequestException('User not found');
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: { isActive: !user.isActive },
+    });
+
+    return {
+      success: true,
+      data: updated,
+      message: `User ${updated.isActive ? 'activated' : 'deactivated'} successfully`
+    };
+  }
+
+  async remove(id: number) {
+    // Soft delete
+    await this.prisma.user.update({
+      where: { id },
+      data: { isDeleted: true, isActive: false },
+    });
+    return { success: true, message: 'User successfully deleted' };
   }
 }

@@ -151,8 +151,24 @@ export class UsersController {
     return this.usersService.updateAdmin(+id, updateAdminDto);
   }
 
+  @ApiOperation({ summary: 'Toggle user active status' })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.superadmin, Role.admin)
+  @Patch(':id/toggle-status')
+  toggleStatus(@Param('id') id: string) {
+    return this.usersService.toggleStatus(+id);
+  }
+
+  @ApiOperation({ summary: 'Demote admin to user' })
+  @UseGuards(TokenGuard, RoleGuard)
+  @Roles(Role.superadmin)
+  @Patch(':id/demote')
+  demoteAdmin(@Param('id') id: string) {
+    return this.usersService.demoteAdmin(+id);
+  }
+
   @ApiOperation({
-    summary: `${Role.superadmin},${Role.admin} and himself ${Role.user}`,
+    summary: `${Role.superadmin},${Role.admin}`,
   })
   @UseGuards(TokenGuard, RoleGuard)
   @Roles(Role.superadmin, Role.admin)

@@ -66,10 +66,10 @@ const AdminAdmins: React.FC = () => {
         }
     };
 
-    const toggleAdminStatus = async (adminId: number, currentStatus: boolean) => {
+    const toggleAdminStatus = async (adminId: number) => {
         setTogglingId(adminId);
         try {
-            await api.patch(`/users/admin/${adminId}`, { isActive: !currentStatus });
+            await api.patch(`/users/${adminId}/toggle-status`);
             fetchAdmins();
         } catch (error) {
             console.error('Failed to toggle admin status', error);
@@ -83,7 +83,7 @@ const AdminAdmins: React.FC = () => {
         if (!selectedAdminId) return;
         setTogglingId(selectedAdminId);
         try {
-            await api.delete(`/users/${selectedAdminId}`);
+            await api.patch(`/users/${selectedAdminId}/demote`);
             fetchAdmins();
             alert('Admin muvaffaqiyatli foydalanuvchiga aylantirildi');
         } catch (error) {
@@ -250,7 +250,7 @@ const AdminAdmins: React.FC = () => {
                         <div className="admin-actions">
                             <button
                                 className={`status-toggle-btn ${admin.isActive ? 'deactivate' : 'activate'}`}
-                                onClick={() => toggleAdminStatus(admin.id, admin.isActive)}
+                                onClick={() => toggleAdminStatus(admin.id)}
                                 disabled={togglingId === admin.id}
                             >
                                 {togglingId === admin.id ? <Loader2 className="animate-spin" size={16} /> : (admin.isActive ? 'Deactivate' : 'Activate')}

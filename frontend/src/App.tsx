@@ -14,6 +14,7 @@ import AdminMovies from './pages/admin/AdminMovies';
 import AdminAdmins from './pages/admin/AdminAdmins';
 import AdminSubscriptions from './pages/admin/AdminSubscriptions';
 import AdminCategories from './pages/admin/AdminCategories';
+import AdminUsers from './pages/admin/AdminUsers';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -100,6 +101,14 @@ const AppContent: React.FC = () => {
             element={
               <AdminRoute>
                 <AdminCategories />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <AdminUsers />
               </AdminRoute>
             }
           />
