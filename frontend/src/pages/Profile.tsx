@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { API_BASE_URL } from '../services/api';
 import { User, Mail, Shield, History, Heart, Settings, Play, Camera, X, CheckCircle } from 'lucide-react';
 import MovieCard from '../components/MovieCard';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -119,7 +119,7 @@ const Profile: React.FC = () => {
           <div className="profile-info-main">
             <div className="avatar-large">
               {user.avatarUrl ? (
-                <img src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:2003/uploads/${user.avatarUrl}`} alt={user.username} />
+                <img src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}/uploads/${user.avatarUrl}`} alt={user.username} />
               ) : (
                 <User size={64} />
               )}
@@ -219,7 +219,7 @@ const Profile: React.FC = () => {
                         >
                           <div className="history-poster">
                             <img
-                              src={item.movie?.posterUrl?.startsWith('http') ? item.movie.posterUrl : `http://localhost:2003/uploads/movies/${item.movie.posterUrl}`}
+                              src={item.movie?.posterUrl?.startsWith('http') ? item.movie.posterUrl : `${API_BASE_URL}/uploads/movies/${item.movie.posterUrl}`}
                               alt=""
                             />
                             <div className="play-overlay"><Play size={24} fill="white" /></div>
@@ -293,7 +293,7 @@ const Profile: React.FC = () => {
                     {avatarPreview ? (
                       <img src={avatarPreview} alt="Preview" />
                     ) : user.avatarUrl ? (
-                      <img src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:2003/uploads/${user.avatarUrl}`} alt="" />
+                      <img src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}/uploads/${user.avatarUrl}`} alt="" />
                     ) : (
                       <User size={40} />
                     )}

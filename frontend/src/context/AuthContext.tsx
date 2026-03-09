@@ -12,6 +12,7 @@ interface User {
         phone?: string;
         country?: string;
     };
+    isActive: boolean;
 }
 
 interface AuthContextType {

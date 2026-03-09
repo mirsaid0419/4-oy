@@ -32,6 +32,7 @@ export class AuthService {
         email: true,
         role: true,
         avatarUrl: true,
+        isActive: true,
         password: true,
         profile: {
           select: {
@@ -68,6 +69,7 @@ export class AuthService {
         email: true,
         role: true,
         avatarUrl: true,
+        isActive: true,
         profile: {
           select: {
             fullName: true,

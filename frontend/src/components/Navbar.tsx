@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
           <Link to="/movies" className="nav-link">Movies</Link>
           <Link to="/subscription" className="nav-link">Pricing</Link>
           {user && <Link to="/favorites" className="nav-link">Favorites</Link>}
-          {user && (user.role === 'admin' || user.role === 'superadmin') && (
+          {user && (user.role === 'admin' || user.role === 'superadmin') && user.isActive && (
             <>
               <Link to="/admin/movies" className="nav-link admin-link">Manage Movies</Link>
               <Link to="/admin/categories" className="nav-link admin-link">Manage Categories</Link>

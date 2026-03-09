@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../services/api';
+import api, { API_BASE_URL } from '../../services/api';
 import { UserPlus, User, Mail, Shield, UserX, Loader2, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -231,7 +231,7 @@ const AdminAdmins: React.FC = () => {
                         <div className="admin-info">
                             <div className="admin-avatar">
                                 {admin.avatarUrl ? (
-                                    <img src={admin.avatarUrl.startsWith('http') ? admin.avatarUrl : `http://localhost:2003/uploads/${admin.avatarUrl}`} alt="" />
+                                    <img src={admin.avatarUrl.startsWith('http') ? admin.avatarUrl : `${API_BASE_URL}/uploads/${admin.avatarUrl}`} alt="" />
                                 ) : (
                                     <User size={30} />
                                 )}
