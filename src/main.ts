@@ -12,7 +12,12 @@ async function bootstrap() {
       // forbidNonWhitelisted: true,
     }),
   );
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
   const config = new DocumentBuilder()
     .setTitle('Kino time swagger API')
     .setDescription(`Kino time sayti uchun backend tizimi API hujjatlari`)
@@ -32,7 +37,7 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   });
- 
-  await app.listen(process.env.PORT ?? 3000,'0.0.0.0');
+
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();
