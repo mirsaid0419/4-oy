@@ -10,12 +10,14 @@ import { Role, SubscriptionStatus } from '@prisma/client';
 import { UpdateAdminDto } from './dto/update-admin-dto';
 import { CreateAdminDto } from './dto/create-admin-dto';
 import { UserSubscriptionService } from '../user-subscription/user-subscription.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly userSubscriptionService: UserSubscriptionService,
+    private readonly cloudinary: CloudinaryService,
   ) { }
   async create(createUserDto: CreateAdminDto, avatar: Express.Multer.File) {
     return this.prisma.$transaction(async (prisma) => {
@@ -34,11 +36,8 @@ export class UsersService {
       if (existUser)
         throw new BadRequestException('User name or email already exist');
       if (avatar) {
-        const file_name = Date.now() + '_image_' + extname(avatar.originalname);
-        createUserDto.avatarUrl = file_name;
-        const uploadPath = join(process.cwd(), 'src', 'uploads');
-        mkdirSync(uploadPath, { recursive: true });
-        writeFileSync(join(uploadPath, file_name), avatar.buffer);
+        const uploaded = await this.cloudinary.uploadFile(avatar, 'users/avatars');
+        createUserDto.avatarUrl = uploaded.url;
       }
       const data = await prisma.user.create({
         data: {
@@ -114,17 +113,8 @@ export class UsersService {
     }
 
     if (avatar) {
-      if (user.avatarUrl) {
-        const oldAvatarPath = join(process.cwd(), 'src', 'uploads', user.avatarUrl);
-        const { existsSync, unlinkSync } = require('fs');
-        if (existsSync(oldAvatarPath)) unlinkSync(oldAvatarPath);
-      }
-
-      const fileName = `${Date.now()}_avatar${extname(avatar.originalname)}`;
-      const uploadPath = join(process.cwd(), 'src', 'uploads');
-      mkdirSync(uploadPath, { recursive: true });
-      writeFileSync(join(uploadPath, fileName), avatar.buffer);
-      updateUserDto.avatarUrl = fileName;
+      const uploaded = await this.cloudinary.uploadFile(avatar, 'users/avatars');
+      updateUserDto.avatarUrl = uploaded.url;
     }
 
     const { fullName, phone, country, ...userData } = updateUserDto;
