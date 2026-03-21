@@ -257,6 +257,12 @@ const Navbar: React.FC = () => {
           background: rgba(255, 255, 255, 0.05);
           color: white;
         }
+        .mobile-toggle {
+          display: none;
+        }
+        .mobile-user-menu {
+          display: none;
+        }
         .mobile-only {
           display: none;
         }
