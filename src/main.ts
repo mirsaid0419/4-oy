@@ -41,5 +41,17 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
+
+  // Keep-alive script for Render free tier
+  const KEEP_ALIVE_URL = 'https://kino-time.onrender.com';
+  setInterval(() => {
+    import('https').then(({ get }) => {
+      get(KEEP_ALIVE_URL, (res) => {
+        console.log(`Keep-alive ping sent to ${KEEP_ALIVE_URL}. Status: ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.error('Keep-alive ping failed:', err.message);
+      });
+    });
+  }, 1000 * 60 * 5); // 5 minutes
 }
 bootstrap();
