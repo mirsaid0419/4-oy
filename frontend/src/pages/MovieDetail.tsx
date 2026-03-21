@@ -600,12 +600,25 @@ const MovieDetail: React.FC = () => {
         .empty-reviews { padding: 40px; text-align: center; color: var(--text-muted); background: var(--glass); border-radius: 20px; }
 
         @media (max-width: 992px) {
-          .main-info { grid-template-columns: 1fr; }
-          .poster-side { max-width: 320px; margin: 0 auto; }
-          .movie-title { font-size: 2.8rem; text-align: center; }
-          .info-badges, .categories, .detail-actions { justify-content: center; }
-          .reviews-grid { grid-template-columns: 1fr; }
-          .add-review { position: static; }
+          .detail-container { padding-top: 100px; }
+          .main-info { grid-template-columns: 1fr; gap: 30px; margin-bottom: 50px; }
+          .poster-side { max-width: 280px; margin: 0 auto; }
+          .movie-title { font-size: 2.2rem; text-align: center; margin-bottom: 20px; }
+          .info-badges, .categories, .detail-actions { justify-content: center; gap: 10px; }
+          .description { font-size: 1rem; text-align: center; }
+          .video-section-wrapper { margin-top: 60px; }
+          .section-title { font-size: 1.8rem; text-align: center; }
+          .reviews-grid { grid-template-columns: 1fr; gap: 30px; }
+          .add-review { position: static; padding: 25px; }
+          .reviews-section { margin-top: 80px; }
+        }
+
+        @media (max-width: 480px) {
+          .movie-title { font-size: 1.8rem; }
+          .info-badge { padding: 8px 14px; font-size: 0.8rem; }
+          .detail-actions { flex-direction: column; }
+          .favorite-action, .share-action { width: 100%; justify-content: center; }
+          .video-meta { flex-direction: column; gap: 15px; text-align: center; }
         }
       `}</style>
     </div>

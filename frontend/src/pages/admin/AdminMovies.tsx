@@ -516,9 +516,19 @@ const AdminMovies: React.FC = () => {
             </div>
 
             <style>{`
-                .admin-movies-page { padding: 120px 5% 50px; min-height: 100vh; }
-                .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-                .admin-header h1 { display: flex; align-items: center; gap: 15px; font-size: 2.2rem; }
+                @media (max-width: 768px) {
+                    .admin-movies-page { padding-top: 100px; }
+                    .admin-header { flex-direction: column; gap: 20px; align-items: flex-start; }
+                    .admin-header h1 { font-size: 1.8rem; }
+                    .add-btn { width: 100%; justify-content: center; }
+                    .movies-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+                    .admin-table { min-width: 800px; }
+                }
+
+                @media (max-width: 480px) {
+                    .modal-footer { flex-direction: column; gap: 10px; }
+                    .submit-btn, .cancel-btn { width: 100%; }
+                }
                 .add-btn { padding: 13px 26px; border-radius: 14px; border: none; color: white; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
                 .add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(229, 9, 20, 0.35); }
 

@@ -1,39 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Play, User, LogOut } from 'lucide-react';
+import { Play, User, LogOut, Menu, X } from 'lucide-react';
 import { API_BASE_URL } from '../services/api';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => setIsOpen(!isOpen);
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <nav className="navbar glass-morphism">
       <div className="nav-container">
-        <Link to="/" className="nav-logo">
+        <Link to="/" className="nav-logo" onClick={closeMenu}>
           <Play fill="var(--primary)" color="var(--primary)" size={32} />
           <span className="logo-text">KINO<span>TIME</span></span>
         </Link>
 
-        <div className="nav-links">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/movies" className="nav-link">Movies</Link>
-          <Link to="/subscription" className="nav-link">Pricing</Link>
-          {user && <Link to="/favorites" className="nav-link">Favorites</Link>}
+        {/* Mobile Toggle Icon */}
+        <button className="mobile-toggle" onClick={toggleMenu}>
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+
+        <div className={`nav-links ${isOpen ? 'active' : ''}`}>
+          <Link to="/" className="nav-link" onClick={closeMenu}>Home</Link>
+          <Link to="/movies" className="nav-link" onClick={closeMenu}>Movies</Link>
+          <Link to="/subscription" className="nav-link" onClick={closeMenu}>Pricing</Link>
+          {user && <Link to="/favorites" className="nav-link" onClick={closeMenu}>Favorites</Link>}
           {user && (user.role === 'admin' || user.role === 'superadmin') && user.isActive && (
             <>
-              <Link to="/admin/movies" className="nav-link admin-link">Manage Movies</Link>
-              <Link to="/admin/categories" className="nav-link admin-link">Manage Categories</Link>
-              <Link to="/admin/subscriptions" className="nav-link admin-link">Manage Plans</Link>
-              <Link to="/admin/users" className="nav-link admin-link">Manage Users</Link>
+              <Link to="/admin/movies" className="nav-link admin-link" onClick={closeMenu}>Manage Movies</Link>
+              <Link to="/admin/categories" className="nav-link admin-link" onClick={closeMenu}>Manage Categories</Link>
+              <Link to="/admin/subscriptions" className="nav-link admin-link" onClick={closeMenu}>Manage Plans</Link>
+              <Link to="/admin/users" className="nav-link admin-link" onClick={closeMenu}>Manage Users</Link>
               {user.role === 'superadmin' && (
-                <Link to="/admin/admins" className="nav-link admin-link">Manage Admins</Link>
+                <Link to="/admin/admins" className="nav-link admin-link" onClick={closeMenu}>Manage Admins</Link>
               )}
             </>
           )}
+
+          {/* User Menu inside navigation on mobile */}
+          <div className="mobile-user-menu">
+            {user ? (
+              <>
+                <Link to="/profile" className="profile-btn" onClick={closeMenu}>
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}/uploads/${user.avatarUrl}`}
+                      alt={user.username}
+                      className="avatar-small"
+                    />
+                  ) : (
+                    <User size={20} />
+                  )}
+                  <span>{user.username}</span>
+                </Link>
+                <button onClick={() => { logout(); closeMenu(); }} className="logout-btn">
+                  <LogOut size={20} /> Logout
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="login-btn gradient-bg" onClick={closeMenu}>Login</Link>
+            )}
+          </div>
         </div>
 
-        <div className="nav-actions">
+        <div className="nav-actions desktop-only">
           {user ? (
             <div className="user-menu">
               <Link to="/profile" className="profile-btn">
@@ -84,6 +118,7 @@ const Navbar: React.FC = () => {
           font-size: 1.5rem;
           font-weight: 800;
           letter-spacing: -1px;
+          z-index: 1001;
         }
         .logo-text span {
           color: var(--primary);
@@ -91,6 +126,7 @@ const Navbar: React.FC = () => {
         .nav-links {
           display: flex;
           gap: 30px;
+          align-items: center;
         }
         .nav-link {
           font-weight: 500;
@@ -99,6 +135,10 @@ const Navbar: React.FC = () => {
         }
         .nav-link:hover {
           color: var(--text-main);
+        }
+        .admin-link {
+          font-size: 0.9rem;
+          opacity: 0.8;
         }
         .nav-actions {
           display: flex;
@@ -110,6 +150,8 @@ const Navbar: React.FC = () => {
           border-radius: 8px;
           font-weight: 600;
           transition: transform 0.2s;
+          display: block;
+          text-align: center;
         }
         .login-btn:hover {
           transform: translateY(-2px);
@@ -128,6 +170,11 @@ const Navbar: React.FC = () => {
           border-radius: 30px;
           font-weight: 500;
           border: 1px solid var(--glass-border);
+          transition: 0.3s;
+        }
+        .profile-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
         }
         .avatar-small {
           width: 24px;
@@ -141,9 +188,63 @@ const Navbar: React.FC = () => {
           color: var(--text-muted);
           cursor: pointer;
           transition: color 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
         .logout-btn:hover {
           color: var(--primary);
+        }
+        .mobile-toggle {
+          display: none;
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          z-index: 1001;
+        }
+        .mobile-user-menu {
+          display: none;
+          width: 100%;
+          padding-top: 20px;
+          margin-top: 20px;
+          border-top: 1px solid var(--glass-border);
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+          .nav-links {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            height: 100vh;
+            width: 300px;
+            background: rgba(10, 10, 12, 0.98);
+            backdrop-filter: blur(20px);
+            flex-direction: column;
+            padding: 100px 40px;
+            transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            align-items: flex-start;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+          }
+          .nav-links.active {
+            right: 0;
+          }
+          .mobile-toggle {
+            display: block;
+          }
+          .desktop-only {
+            display: none;
+          }
+          .mobile-user-menu {
+            display: flex;
+          }
+          .admin-link {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+          }
         }
       `}</style>
     </nav>

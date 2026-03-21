@@ -1,0 +1,12 @@
+$kind: http-request
+name: New Request
+url: http://localhost:3000/auth/send-otp
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"saidxon548@gmail.com\"\r
+
+    }"
+order: 1773239177190

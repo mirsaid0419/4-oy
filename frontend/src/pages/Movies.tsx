@@ -371,9 +371,42 @@ const Movies: React.FC = () => {
                 }
                 .reset-btn:hover { transform: scale(1.05); }
 
+                @media (max-width: 1024px) {
+                    .catalog-header h1 { font-size: 3rem; }
+                    .search-filter-bar { padding: 15px; }
+                }
+
                 @media (max-width: 768px) {
-                    .search-filter-bar { flex-direction: column; }
-                    .catalog-header h1 { font-size: 2.5rem; }
+                    .movies-catalog-page { padding-top: 100px; }
+                    .catalog-header { margin-bottom: 40px; }
+                    .catalog-header h1 { font-size: 2.2rem; }
+                    .subtitle { font-size: 1rem; }
+                    .search-filter-bar { 
+                        flex-direction: column; 
+                        padding: 20px;
+                        gap: 15px;
+                    }
+                    .search-input-wrapper { width: 100%; }
+                    .filters { 
+                        width: 100%; 
+                        flex-direction: column;
+                        gap: 10px;
+                    }
+                    .custom-dropdown, .dropdown-btn { width: 100%; }
+                    
+                    .catalog-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 15px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .catalog-header h1 { font-size: 1.8rem; }
+                    .catalog-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 10px;
+                    }
+                    .movies-catalog-page { padding-left: 15px; padding-right: 15px; }
                 }
             `}</style>
         </div>

@@ -161,8 +161,53 @@ const Home: React.FC = () => {
           color: var(--text-muted);
         }
         @media (max-width: 768px) {
-          .hero-content h1 { font-size: 2.5rem; }
-          .hero-actions { flex-direction: column; }
+          .home-page {
+            padding-top: 60px;
+          }
+          .hero {
+            height: 60vh;
+            padding: 0 20px;
+            background-position: 70% center;
+          }
+          .hero-content h1 { 
+            font-size: 2.2rem; 
+          }
+          .hero-content p {
+            font-size: 1rem;
+            margin-bottom: 25px;
+          }
+          .hero-actions { 
+            flex-direction: column; 
+            gap: 12px;
+          }
+          .primary-btn, .secondary-btn {
+            padding: 14px 30px;
+            width: 100%;
+            text-align: center;
+          }
+          .movie-section {
+            padding: 40px 20px;
+          }
+          .section-header h2 {
+            font-size: 1.5rem;
+          }
+          .movie-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .hero {
+            height: 50vh;
+          }
+          .hero-content h1 {
+            font-size: 1.8rem;
+          }
+          .movie-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+          }
         }
       `}</style>
     </div>

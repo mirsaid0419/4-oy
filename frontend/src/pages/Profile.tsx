@@ -487,14 +487,30 @@ const Profile: React.FC = () => {
        .empty-state { text-align: center; padding: 80px 40px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 20px; }
 
         @media (max-width: 992px) {
-          .profile-grid { grid-template-columns: 1fr; }
-          .profile-header { flex-direction: column; text-align: center; padding: 30px; gap: 30px; }
-          .profile-info-main { flex-direction: column; }
-          .user-details h1 { font-size: 2rem; }
-          .favorites-grid-profile { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+          .profile-page { padding-top: 100px; }
+          .profile-header { flex-direction: column; text-align: center; padding: 30px; gap: 30px; border-radius: 16px; }
+          .profile-info-main { flex-direction: column; gap: 20px; }
+          .user-details h1 { font-size: 1.8rem; }
+          .user-sub-details { justify-content: center; }
+          .profile-grid { grid-template-columns: 1fr; gap: 30px; }
+          .profile-sidebar { order: 2; }
+          .profile-main { order: 1; }
           .avatar-large { width: 100px; height: 100px; }
-          .profile-completion-alert { flex-direction: column; text-align: center; gap: 20px; }
+          .profile-completion-alert { flex-direction: column; text-align: center; gap: 20px; padding: 20px; }
           .alert-content { flex-direction: column; text-align: center; }
+          .tabs { padding: 0 10px; }
+          .tab { padding: 20px 10px; font-size: 0.9rem; }
+          .tab-pane { padding: 20px 10px; }
+          .favorites-grid-profile { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        }
+
+        @media (max-width: 600px) {
+          .form-grid { grid-template-columns: 1fr; }
+          .edit-modal { padding: 25px; }
+          .modal-actions { flex-direction: column; }
+          .history-item { gap: 15px; }
+          .history-poster { width: 60px; height: 90px; }
+          .item-details h4 { font-size: 1rem; }
         }
       `}</style>
     </div>
