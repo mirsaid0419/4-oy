@@ -30,16 +30,34 @@ const Navbar: React.FC = () => {
           <Link to="/subscription" className="nav-link" onClick={closeMenu}>Pricing</Link>
           {user && <Link to="/favorites" className="nav-link" onClick={closeMenu}>Favorites</Link>}
           {user && (user.role === 'admin' || user.role === 'superadmin') && user.isActive && (
-            <>
-              <Link to="/admin/movies" className="nav-link admin-link" onClick={closeMenu}>Manage Movies</Link>
-              <Link to="/admin/categories" className="nav-link admin-link" onClick={closeMenu}>Manage Categories</Link>
-              <Link to="/admin/subscriptions" className="nav-link admin-link" onClick={closeMenu}>Manage Plans</Link>
-              <Link to="/admin/users" className="nav-link admin-link" onClick={closeMenu}>Manage Users</Link>
-              {user.role === 'superadmin' && (
-                <Link to="/admin/admins" className="nav-link admin-link" onClick={closeMenu}>Manage Admins</Link>
-              )}
-            </>
+            <div className="admin-dropdown desktop-only">
+              <button className="nav-link dropdown-trigger">Manage ▼</button>
+              <div className="dropdown-content glass-morphism">
+                <Link to="/admin/movies" className="dropdown-link" onClick={closeMenu}>Movies</Link>
+                <Link to="/admin/categories" className="dropdown-link" onClick={closeMenu}>Categories</Link>
+                <Link to="/admin/subscriptions" className="dropdown-link" onClick={closeMenu}>Plans</Link>
+                <Link to="/admin/users" className="dropdown-link" onClick={closeMenu}>Users</Link>
+                {user.role === 'superadmin' && (
+                  <Link to="/admin/admins" className="dropdown-link" onClick={closeMenu}>Admins</Link>
+                )}
+              </div>
+            </div>
           )}
+
+          {/* Mobile Admin Links (already inside nav-links which becomes a drawer) */}
+          <div className="mobile-only admin-mobile-links">
+            {user && (user.role === 'admin' || user.role === 'superadmin') && user.isActive && (
+              <>
+                <Link to="/admin/movies" className="nav-link admin-link" onClick={closeMenu}>Manage Movies</Link>
+                <Link to="/admin/categories" className="nav-link admin-link" onClick={closeMenu}>Manage Categories</Link>
+                <Link to="/admin/subscriptions" className="nav-link admin-link" onClick={closeMenu}>Manage Plans</Link>
+                <Link to="/admin/users" className="nav-link admin-link" onClick={closeMenu}>Manage Users</Link>
+                {user.role === 'superadmin' && (
+                  <Link to="/admin/admins" className="nav-link admin-link" onClick={closeMenu}>Manage Admins</Link>
+                )}
+              </>
+            )}
+          </div>
 
           {/* User Menu inside navigation on mobile */}
           <div className="mobile-user-menu">
@@ -195,25 +213,67 @@ const Navbar: React.FC = () => {
         .logout-btn:hover {
           color: var(--primary);
         }
-        .mobile-toggle {
-          display: none;
+        .admin-dropdown {
+          position: relative;
+          height: 80px;
+          display: flex;
+          align-items: center;
+        }
+        .dropdown-trigger {
           background: none;
           border: none;
-          color: white;
           cursor: pointer;
-          z-index: 1001;
+          font-family: inherit;
+          font-size: 1rem;
         }
-        .mobile-user-menu {
+        .dropdown-content {
+          position: absolute;
+          top: 80px;
+          left: 50%;
+          transform: translateX(-50%) translateY(10px);
+          min-width: 200px;
+          padding: 10px;
+          border-radius: 12px;
+          opacity: 0;
+          visibility: hidden;
+          transition: 0.3s;
+          z-index: 1002;
+        }
+        .admin-dropdown:hover .dropdown-content {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(0);
+        }
+        .dropdown-link {
+          display: block;
+          padding: 12px 20px;
+          border-radius: 8px;
+          color: var(--text-muted);
+          transition: 0.3s;
+          font-size: 0.9rem;
+          white-space: nowrap;
+        }
+        .dropdown-link:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+        }
+        .mobile-only {
           display: none;
-          width: 100%;
-          padding-top: 20px;
-          margin-top: 20px;
-          border-top: 1px solid var(--glass-border);
-          flex-direction: column;
-          gap: 20px;
+        }
+        .desktop-only {
+          display: flex;
         }
 
         @media (max-width: 1024px) {
+          .mobile-only {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+          }
+          .desktop-only {
+            display: none;
+          }
           .nav-links {
             position: fixed;
             top: 0;

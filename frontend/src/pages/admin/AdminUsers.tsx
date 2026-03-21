@@ -153,10 +153,18 @@ const AdminUsers: React.FC = () => {
             )}
 
             <style>{`
-                .admin-users-page { padding: 120px 5% 50px; min-height: 100vh; }
-                .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; gap: 20px; }
-                .admin-header h1 { display: flex; align-items: center; gap: 15px; font-size: 2.2rem; flex-shrink: 0; }
+                .admin-users-page { padding: 160px 5% 50px; min-height: 100vh; max-width: 1400px; margin: 0 auto; }
+                .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; gap: 20px; width: 100%; }
+                .admin-header h1 { display: flex; align-items: center; gap: 15px; font-size: 2.2rem; flex-shrink: 0; margin: 0; }
                 
+                @media (max-width: 768px) {
+                    .admin-users-page { padding-top: 120px; }
+                    .admin-header { flex-direction: column; align-items: stretch; gap: 15px; }
+                    .admin-header h1 { font-size: 1.8rem; }
+                    .users-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+                    .admin-table { min-width: 800px; }
+                }
+
                 .search-bar { display: flex; align-items: center; gap: 15px; padding: 10px 20px; border-radius: 12px; width: 100%; max-width: 400px; }
                 .search-bar input { background: none; border: none; color: white; outline: none; width: 100%; font-size: 1rem; }
                 

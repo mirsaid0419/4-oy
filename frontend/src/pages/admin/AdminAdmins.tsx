@@ -269,20 +269,37 @@ const AdminAdmins: React.FC = () => {
 
             <style>{`
                 .admin-admins-page {
-                    padding: 120px 5% 50px;
+                    padding: 160px 5% 50px;
                     min-height: 100vh;
+                    max-width: 1400px;
+                    margin: 0 auto;
                 }
                 .admin-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     margin-bottom: 40px;
+                    width: 100%;
                 }
                 .admin-header h1 {
                     display: flex;
                     align-items: center;
                     gap: 15px;
                     font-size: 2.2rem;
+                    margin: 0;
+                }
+
+                @media (max-width: 768px) {
+                    .admin-admins-page { padding-top: 120px; }
+                    .admin-header { flex-direction: column; gap: 20px; align-items: flex-start; }
+                    .admin-header h1 { font-size: 1.8rem; }
+                    .add-btn { width: 100%; justify-content: center; }
+                    .admins-grid { grid-template-columns: 1fr; }
+                }
+
+                @media (max-width: 480px) {
+                    .form-actions { flex-direction: column; }
+                    .submit-btn, .cancel-btn { width: 100%; }
                 }
                 .add-btn {
                     padding: 12px 24px;
