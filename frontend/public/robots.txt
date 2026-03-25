@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kino-time.onrender.com/sitemap.xml
+Sitemap: https://front-im9w.onrender.com/sitemap.xml
