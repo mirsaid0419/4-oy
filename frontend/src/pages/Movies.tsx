@@ -59,7 +59,7 @@ const Movies: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     className="gradient-text"
                 >
-                    Explore Our Library
+                    KinoTime: Explore Movies
                 </motion.h1>
                 <p className="subtitle">Discover thousands of movies, from all-time classics to the latest blockbusters.</p>
 

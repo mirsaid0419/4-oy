@@ -42,7 +42,7 @@ const Home: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="gradient-text"
           >
-            Unlimited Movies, TV Shows, & More.
+            KinoTime: Unlimited Movies, TV Shows, & More.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
