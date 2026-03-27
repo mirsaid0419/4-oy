@@ -52,6 +52,6 @@ async function bootstrap() {
         console.error('Keep-alive ping failed:', err.message);
       });
     });
-  }, 1000 * 60 * 5); // 5 minutes
+  }, 1000 * 60 * 1); // 1 minute
 }
 bootstrap();
